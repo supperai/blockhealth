@@ -17,27 +17,27 @@ export default function (address, type = 'POST', params = {}, sucFuc, dispatch, 
         urlPositfix = '../../server/';
     }
 
-    if (loading) {
-        dispatch({
-            type: 'LOADING',
-            data: {
-                show: true
-            }
-        });
-    }
+    // if (loading) {
+    //     dispatch({
+    //         type: 'LOADING',
+    //         data: {
+    //             show: true
+    //         }
+    //     });
+    // }
 
     let ajaxParam = {
         type: type,
         url: urlPositfix + address + postfix + '?cacheId=' + (+new Date()),
         success: function (data) {
-            if (loading) {
-                dispatch({
-                    type: 'LOADING',
-                    data: {
-                        show: false
-                    }
-                });
-            }
+            // if (loading) {
+            //     dispatch({
+            //         type: 'LOADING',
+            //         data: {
+            //             show: false
+            //         }
+            //     });
+            // }
             if (typeof data === 'string') {
                 data = data === '' ? {} : JSON.parse(data);
             }
@@ -49,14 +49,14 @@ export default function (address, type = 'POST', params = {}, sucFuc, dispatch, 
             sucFuc(data);
         },
         error: function (xhr, errorType, error) {
-            if (loading) {
-                dispatch({
-                    type: 'LOADING',
-                    data: {
-                        show: false
-                    }
-                });
-            }
+            // if (loading) {
+            //     dispatch({
+            //         type: 'LOADING',
+            //         data: {
+            //             show: false
+            //         }
+            //     });
+            // }
             if (xhr.status === 200) {
                 sucFuc && sucFuc(xhr.responseText);
                 return;
