@@ -1,4 +1,4 @@
-/* PAGE */
+@import "~antd/dist/antd.css";
 
 body,
 .pure-g [class*=pure-u] {
@@ -20,6 +20,14 @@ code {
   box-sizing: border-box;
   width: 100%;
   padding: 45px 20px;
+}
+
+.search {
+  padding: 15px;
+  background: #f8f8f8;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  margin-bottom: 16px;
 }
 
 .pure-button-primary {
