@@ -50,3 +50,4 @@ src/main/webapp/dist/
 src/main/webapp/rsrc/
 webpack-assets.json
 spring-config.properties
+.DS_Store
