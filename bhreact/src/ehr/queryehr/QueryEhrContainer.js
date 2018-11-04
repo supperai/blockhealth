@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {Col, Row, Form, Input, Button} from 'antd';
+import {Col, Row, Form, Input, Button, message} from 'antd';
 import * as QueryEhrActions from './QueryEhrActions';
 import QueryEhrTable from './QueryEhrTable';
 import './tableform.less';
@@ -54,15 +54,15 @@ class QueryEhrContainer extends Component {
     }
 
     onQuery() {
-        this.action.queryEhr(this.getQueryParam());
-    }
-
-    getQueryParam() {
         let query = this.props.form.getFieldsValue();
 
-        return {
-            idNo : query.idNo,
-            diseaseName: query.diseaseName
+        if ((query.idNo === undefined || query.idNo === '') && (query.diseaseName === undefined || query.diseaseName === '')) {
+            message.warning("请输入参数！");
+        } else {
+            this.action.queryEhr({
+                idNo: query.idNo,
+                diseaseName: query.diseaseName
+            });
         }
     }
 
