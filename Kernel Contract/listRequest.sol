@@ -1,18 +1,18 @@
 pragma solidity ^0.4.25;
 
-
+//test
 
 contract listRequest {
     
     
     struct Dss {
-        uint Num;
+        uint32 Num; //uint32 Num ∈[0,999999999]
         string Name;
         string HsptList;
     }
     
     struct Hspt {
-        uint Num;
+        uint32 Num;
         string Name;
         string Ip;
     }
@@ -27,11 +27,13 @@ contract listRequest {
     //////internal basic function//////
     //compare 2 string
     function strCompare(string a, string b) internal returns (bool) {
-        if (bytes(a).length != bytes(b).length) {
+        bytes memory ba = bytes(a);
+        bytes memory bb = bytes(b);
+        if (ba.length != bb.length) {
             return false;
         }
-        for (uint i = 0; i < bytes(a).length; i ++) {
-            if(bytes(a)[i] != bytes(b)[i]) {
+        for (uint i = 0; i < ba.length; i ++) {
+            if(ba[i] != bb[i]) {
                 return false;
             }
         }
@@ -39,24 +41,23 @@ contract listRequest {
     }
     
     //concatenate 2 string 
-    function strConcat(string _a, string _b) internal returns (string){
+    function strConcat(string _a, string _b) internal returns ( string ){
         bytes memory _ba = bytes(_a);
         bytes memory _bb = bytes(_b);
-        string memory ret = new string(_ba.length + _bb.length);
-        bytes memory bret = bytes(ret);
+        bytes memory bret = new bytes(_ba.length + _bb.length);
         uint k = 0;
-        for (uint i = 0; i < _ba.length; i++)bret[k++] = _ba[i];
+        for (uint i = 0; i < _ba.length; i++) bret[k++] = _ba[i];
         for (i = 0; i < _bb.length; i++) bret[k++] = _bb[i];
-        return string(ret);
+        return string(bret);
     }
     
     //get a piece of string slice
     function getSlice(uint begin, uint end, string text) internal pure returns (string) {
         bytes memory a = new bytes(end-begin+1);
-        for(uint i=0;i<=end-begin;i++){
+        for( uint i = 0; i<=end-begin ; i++ ){
             a[i] = bytes(text)[i+begin-1];
         }
-        return string(a);    
+        return string(a);
     }
     
     //count how many "x" in a "x1,x2,x3,x4" string 
@@ -78,27 +79,27 @@ contract listRequest {
     //=>retTmp will be "dalian";strTmp will be "".
     string strTmp ;
     string retTmp ; 
-    function strSeprate(string s) internal {
-        if(bytes(s).length == 0 ){return;}
+    function strSeprate(string storage s) internal {
+        bytes tmp = bytes(s);
+        uint slength = tmp.length;
+        if(slength == 0 ){return;}
         retTmp = s;//prepare for input:"dalian"
         strTmp = s;
-        string memory innerStrTmp = s;
         uint begin = 1;
         uint end = 2;
-        bytes tmp = bytes(strTmp);
-        for( uint i = 0 ; i < tmp.length ; i++ ){
-            if( i == tmp.length-1 ){//input:"dalian"
+        for( uint i = 0 ; i < slength ; i++ ){
+            if( i == slength -1 ){//input:"dalian"
                 strTmp = "";
                 break;
             }
             if( tmp[i] == bytes1(",") ){
                 end = i;
-                retTmp = getSlice(begin,end,innerStrTmp);
-                if(end+1 == tmp.length) {//input:"dalian,"
+                retTmp = getSlice(begin,end,s);
+                if(end+1 == slength) {//input:"dalian,"
                     strTmp = "";
                     break;
                 }
-                strTmp = getSlice(end+2,bytes(innerStrTmp).length,innerStrTmp);
+                strTmp = getSlice(end+2,slength,s);
                 break;
             }
         }
@@ -113,7 +114,7 @@ contract listRequest {
                 return;
             }
         }
-        uint n = AllHsptList.length;
+        uint32 n = uint32(AllHsptList.length);
         AllHsptList.push( Hspt({ Num:n , Name:_Name , Ip:_Ip }) );
     }
     
@@ -124,7 +125,7 @@ contract listRequest {
                 return;
             }
         }
-        uint n = AllHsptList.length;
+        uint32 n = uint32(AllHsptList.length);
         AllHsptList.push( Hspt({ Num:n , Name:_Name , Ip:"0" }) );
     } 
     
@@ -155,9 +156,23 @@ contract listRequest {
                 return;
             }
         }
-        uint n = AllDssList.length;
+        uint32 n = uint32(AllDssList.length);
         string str ;
         AllDssList.push( Dss({ Num:n , Name:_Name , HsptList:str }) );
+    }
+    
+    //add disease with their hspt name
+    function addDss( string _Name ,string _HsptName )internal{
+        for( uint i = 0 ; i < AllDssList.length ; i++ ){
+            if(strCompare(_Name,AllDssList[i].Name)){ //already has the Dss, now add the HsptList.
+                string memory str1 = strConcat(_HsptName,",") ;
+                AllDssList[i].HsptList = strConcat(AllDssList[i].HsptList,str1);
+                return;
+            }
+        }
+        uint32 n = uint32(AllDssList.length);
+        string memory str2 = strConcat(_HsptName,",") ;
+        AllDssList.push( Dss({ Num:n , Name:_Name , HsptList:str2 }) );
     }
     
     //is a disease called "_Name" here in the list?
@@ -186,29 +201,31 @@ contract listRequest {
     //_Ip:Hspt Ip
     //_DssList:the disease names string that the Hspt has
     //e.g. _DssList better looks like "dss1,dss2,dss3" or "dss1,dss2,dss3,"; DO NOT be like ",dss1,dss2" 
+    // function loadHsptInfo0( string _Name , string _Ip , string _DssList ) public{
+    //     addHspt( _Name , _Ip );
+    //     if(bytes(_DssList).length==0)return;
+    //     uint DssAmount = strCount2c(_DssList);
+    //     strTmp = _DssList;
+    //     string memory nameWith2c = strConcat(_Name,",");
+    //     for( uint i = 0 ; i < DssAmount ; i ++){
+    //         strSeprate(strTmp);
+    //         addDss(retTmp);
+    //         uint n = getDssNum(retTmp);
+    //         AllDssList[n].HsptList=strConcat(AllDssList[n].HsptList,nameWith2c);
+    //         //AllDssList[n].HsptList=strConcat(AllDssList[n].HsptList,",");
+    //     }
+    
+    // }
+    
     function loadHsptInfo( string _Name , string _Ip , string _DssList ) public{
         addHspt( _Name , _Ip );
         if(bytes(_DssList).length==0)return;
         uint DssAmount = strCount2c(_DssList);
         strTmp = _DssList;
-        /*
-        for( uint i = 0 ; i < DssAmount ; i ++){
+        for( uint i = 0 ; i < DssAmount ; i++ ){
             strSeprate(strTmp);
-            addDss(retTmp);
-            AllDssList[getDssNum(retTmp)].HsptList=strConcat(AllDssList[getDssNum(retTmp)].HsptList,_Name);
-            AllDssList[getDssNum(retTmp)].HsptList=strConcat(AllDssList[getDssNum(retTmp)].HsptList,",");
+            addDss(retTmp,_Name);
         }
-        */
-        //string strBuffer;
-        //string retBuffer;
-        
-        for( uint i = 0 ; i < DssAmount ; i ++){
-            strSeprate(strTmp);
-            addDss(retTmp);
-            AllDssList[getDssNum(retTmp)].HsptList=strConcat(AllDssList[getDssNum(retTmp)].HsptList,_Name);
-            AllDssList[getDssNum(retTmp)].HsptList=strConcat(AllDssList[getDssNum(retTmp)].HsptList,",");
-        }
-    
     }
     
     //=>all Hspt name in a string
