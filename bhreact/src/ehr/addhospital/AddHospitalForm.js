@@ -15,8 +15,8 @@ class AddHospitalForm extends Component {
         const infoForm = this.props.form.getFieldsValue();
 
         if ((infoForm.name === undefined || infoForm.name === '')
-            && (infoForm.ip === undefined || infoForm.ip === '')
-            && (infoForm.diseaseList === undefined || infoForm.diseaseList === '')) {
+            || (infoForm.ip === undefined || infoForm.ip === '')
+            || (infoForm.diseaseList === undefined || infoForm.diseaseList === '')) {
             message.warning("请输入信息！");
         } else {
             this.action.addHospital(infoForm);
