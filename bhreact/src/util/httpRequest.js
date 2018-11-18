@@ -14,7 +14,7 @@ export default function (address, type = 'POST', params = {}, sucFuc, dispatch, 
     if ((hostname.indexOf("localhost") !== -1 || hostname.indexOf("0.0.0.0") !== -1) && window.location.port.charAt(0) === "3") {
         type = 'GET';
         postfix = ".json";
-        urlPositfix = '../../server/';
+        urlPositfix = 'server/';
     }
 
     // if (loading) {

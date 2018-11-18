@@ -1,5 +1,6 @@
 const initialState = {
-    ehrs:[]
+    ehrs:[],
+    token: '',
 };
 
 export default function (state = initialState, action) {
@@ -9,6 +10,13 @@ export default function (state = initialState, action) {
             return {
                 ...state,
                 ehrs: action.data
+            };
+
+        case 'GET_TOKEN':
+
+            return {
+                ...state,
+                token: action.data
             };
 
         default:

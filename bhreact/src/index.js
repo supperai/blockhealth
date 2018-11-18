@@ -3,21 +3,18 @@ import ReactDOM from 'react-dom';
 import { Router, Route, IndexRoute, browserHistory } from 'react-router'
 import { Provider } from 'react-redux'
 import { syncHistoryWithStore } from 'react-router-redux'
-import { UserIsAuthenticated, UserIsNotAuthenticated } from './util/wrappers.js'
 import getWeb3 from './util/web3/getWeb3'
 
 // Layouts
 import App from './App'
 import QueryEhrContainer from './ehr/queryehr/QueryEhrContainer'
-import Dashboard from './layouts/dashboard/Dashboard'
-import SignUp from './user/layouts/signup/SignUp'
-import Profile from './user/layouts/profile/Profile'
+import {AddHospitalContainer} from "./ehr/addhospital/AddHospitalContainer";
 
 // Redux Store
 import store from './store'
 
 // Initialize react-router-redux.
-const history = syncHistoryWithStore(browserHistory, store)
+const history = syncHistoryWithStore(browserHistory, store);
 
 // Initialize web3 and set in Redux.
 getWeb3
@@ -26,19 +23,17 @@ getWeb3
 })
 .catch(() => {
   console.log('Error in web3 initialization.')
-})
+});
 
 ReactDOM.render((
     <Provider store={store}>
       <Router history={history}>
         <Route path="/" component={App}>
-          <IndexRoute component={QueryEhrContainer} />
-          <Route path="dashboard" component={UserIsAuthenticated(Dashboard)} />
-          <Route path="signup" component={UserIsNotAuthenticated(SignUp)} />
-          <Route path="profile" component={UserIsAuthenticated(Profile)} />
+            <IndexRoute component={QueryEhrContainer} />
+            <Route path="addHospital" component={AddHospitalContainer} />
         </Route>
       </Router>
     </Provider>
   ),
   document.getElementById('root')
-)
+);
