@@ -29,7 +29,7 @@ export function queryEhr(param) {
                             let addressList = result.split(',');
 
                             return dispatch(() => {
-                                for (let i=0; i<addressList.size(); i++) {
+                                for (let i=0; i<addressList.length; i++) {
                                     request(addressList[i] + '/queryEhr',
                                         'GET',
                                         param,
