@@ -88,10 +88,6 @@ contract listRequest {
         uint begin = 1;
         uint end = 2;
         for( uint i = 0 ; i < slength ; i++ ){
-            if( i == slength -1 ){//input:"dalian"
-                strTmp = "";
-                break;
-            }
             if( tmp[i] == bytes1(",") ){
                 end = i;
                 retTmp = getSlice(begin,end,s);
@@ -100,6 +96,44 @@ contract listRequest {
                     break;
                 }
                 strTmp = getSlice(end+2,slength,s);
+                break;
+            }
+            if( i == slength -1 ){//input:"dalian"
+                strTmp = "";
+                break;
+            }
+
+        }
+    }
+    
+    //e.g. strSeprate("dalian,shanghai,beijing");
+    //=>retTmp will be "dalian";strTmp will be "shanghai,beijing".
+    //e.g. specially:
+    //strSeprate("dalian" or "dalian,");
+    //=>retTmp will be "dalian";strTmp will be "".
+    string hspt_strTmp ;
+    string hspt_retTmp ; 
+    function hspt_strSeprate(string storage s) internal {
+        bytes tmp = bytes(s);
+        uint slength = tmp.length;
+        if(slength == 0 ){return;}
+        hspt_retTmp = s;//prepare for input:"dalian"
+        hspt_strTmp = s;
+        uint begin = 1;
+        uint end = 2;
+        for( uint i = 0 ; i < slength ; i++ ){
+            if( tmp[i] == bytes1(",") ){
+                end = i;
+                hspt_retTmp = getSlice(begin,end,s);
+                if(end+1 == slength) {//input:"dalian,"
+                    hspt_strTmp = "";
+                    break;
+                }
+                hspt_strTmp = getSlice(end+2,slength,s);
+                break;
+            }
+            if( i == slength -1 ){//input:"dalian"
+                hspt_strTmp = "";
                 break;
             }
         }
@@ -216,8 +250,14 @@ contract listRequest {
     //     }
     
     // }
-    
-    function loadHsptInfo( string _Name , string _Ip , string _DssList ) public{
+
+
+    //input Hspt information into contract
+    //_Name:Hspt name
+    //_Ip:Hspt Ip
+    //_DssList:the disease names string that the Hspt has
+    //e.g. _DssList better looks like "dss1,dss2,dss3" or "dss1,dss2,dss3,"; DO NOT be like ",dss1,dss2" 
+    function loadHsptInfo( string _Name , string _Ip , string _DssList ) public returns ( string ) {
         addHspt( _Name , _Ip );
         if(bytes(_DssList).length==0)return;
         uint DssAmount = strCount2c(_DssList);
@@ -226,6 +266,7 @@ contract listRequest {
             strSeprate(strTmp);
             addDss(retTmp,_Name);
         }
+        if ( i == DssAmount ) return "succeed";
     }
     
     //=>all Hspt name in a string
@@ -250,13 +291,21 @@ contract listRequest {
         return "no such a Hspt";
     }
     
-    //Dss Name => all the Hspts Name in a string that the Dss appears
+    //Dss Name => all the Hspts Ip in a string that the Dss appears
     //test passed
     function getHpstFromDss( string _DssName ) public constant returns ( string ){
         if( bytes(_DssName).length == 0 ) return "input something";
         if( AllDssList.length == 0 ) return "no disease yet";
         if( AllHsptList.length == 0 ) return "no hosptial yet";
-        return(AllDssList[getDssNum(_DssName)].HsptList);
+        string memory ret_ip ;
+        hspt_strTmp = AllDssList[getDssNum(_DssName)].HsptList;
+        uint HsptAmount = strCount2c(hspt_strTmp);
+        for( uint i = 0 ; i < HsptAmount ; i++ ){
+            hspt_strSeprate(hspt_strTmp);
+            ret_ip = strConcat(ret_ip,getHpstIp(hspt_retTmp));
+            ret_ip = strConcat(ret_ip,",");
+        }
+        return(ret_ip);
     }
     
 } 
