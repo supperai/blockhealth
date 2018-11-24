@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
-import {Col, Row, Form, Input, Button, message} from 'antd';
+import {Col, Row, Form, Input, Button, message, Select} from 'antd';
 import * as AddHospitalActions from './AddHospitalActions';
+import {USER_LEVEL} from '../constant/EhrConstants';
 
 const FormItem = Form.Item;
 
@@ -16,7 +17,10 @@ class AddHospitalForm extends Component {
 
         if ((infoForm.name === undefined || infoForm.name === '')
             || (infoForm.ip === undefined || infoForm.ip === '')
-            || (infoForm.diseaseList === undefined || infoForm.diseaseList === '')) {
+            || (infoForm.diseaseList === undefined || infoForm.diseaseList === '')
+            || (infoForm.address === undefined || infoForm.address === '')
+            || (infoForm.level === undefined || infoForm.level === '')
+        ) {
             message.warning("请输入信息！");
         } else {
             this.action.addHospital(infoForm);
@@ -59,6 +63,32 @@ class AddHospitalForm extends Component {
                                     wrapperCol={{span: 15}}
                                 >
                                     <Input placeholder="请输入疾病" {...getFieldProps('diseaseList')} size="default"/>
+                                </FormItem>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col sm={12} offset={6}>
+                                <FormItem
+                                    label="区块链地址:"
+                                    labelCol={{span: 8}}
+                                    wrapperCol={{span: 15}}
+                                >
+                                    <Input placeholder="请输入区块链地址" {...getFieldProps('address')} size="default"/>
+                                </FormItem>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col sm={12} offset={6}>
+                                <FormItem
+                                    label="权限:"
+                                    labelCol={{span: 8}}
+                                    wrapperCol={{span: 15}}
+                                >
+                                    <Select placeholder="请选择权限等级" {...getFieldProps('level')}>
+                                        {Object.keys(USER_LEVEL).map((key, index) => {
+                                            return (<Option value={key} key={index}>{USER_LEVEL[key]}</Option>)
+                                        })}
+                                    </Select>
                                 </FormItem>
                             </Col>
                         </Row>

@@ -11,17 +11,17 @@ export default class QueryEhrTable extends Component {
         const {ehrs} = this.props.queryEhr;
 
         const ehrColumns = [{
-            title: '身份证号',
-            dataIndex: 'idNo',
-            key: 'idNo',
+            title: '序号',
+            dataIndex: 'no',
+            key: 'no',
         }, {
             title: '病名',
             dataIndex: 'diseaseName',
             key: 'diseaseName',
         }, {
-            title: '病历',
-            dataIndex: 'ehr',
-            key: 'ehr',
+            title: '详细信息',
+            dataIndex: 'detail',
+            key: 'detail',
         }];
 
         return (

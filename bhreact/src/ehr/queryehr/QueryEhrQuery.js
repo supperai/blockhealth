@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {Col, Row, Form, Input, Button, message} from 'antd';
+import {Col, Row, Form, Input, Button, message, Select} from 'antd';
 import * as QueryEhrActions from './QueryEhrActions';
 
 const FormItem = Form.Item;
+const Option = Select.Option;
 
 @connect(state => ({
     queryEhr: state.queryEhr
@@ -16,26 +17,28 @@ class QueryEhrQuery extends Component {
     }
 
     componentDidMount() {
-        // this.action.getToken();
+        // this.action.getDiseaseList();
     }
 
     onQuery() {
         const query = this.props.form.getFieldsValue();
-        const {token} = this.props.queryEhr;
 
         if ((query.idNo === undefined || query.idNo === '') && (query.diseaseName === undefined || query.diseaseName === '')) {
             message.warning("请输入参数！");
         } else {
-            this.action.queryEhr({
-                idNo: query.idNo,
+            const {ehrs} = this.props.queryEhr;
+            while (ehrs.length > 0) {
+                this.action.clearEhrs();
+            }
+            this.action.queryEhrByDisease({
                 diseaseName: query.diseaseName,
-                token: token
             });
         }
     }
 
     render() {
         const {getFieldProps} = this.props.form;
+        const {diseaseList} = this.props.queryEhr;
         return (
             <main className="container">
                 <div className="search">
@@ -56,7 +59,11 @@ class QueryEhrQuery extends Component {
                                     labelCol={{span: 8}}
                                     wrapperCol={{span: 15}}
                                 >
-                                    <Input placeholder="请输入病名" {...getFieldProps('diseaseName')} size="default"/>
+                                    <Select placeholder="请选择病名" {...getFieldProps('diseaseName')}>
+                                        {Object.keys(diseaseList).map((key, index) => {
+                                            return (<Option value={diseaseList[key]} key={index}>{diseaseList[key]}</Option>)
+                                        })}
+                                    </Select>
                                 </FormItem>
                             </Col>
                             <Col sm={3} offset={3}>

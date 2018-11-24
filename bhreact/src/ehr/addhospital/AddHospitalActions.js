@@ -2,7 +2,7 @@ import store from "../../store";
 import ListRequestContract from '../../../build/contracts/ListRequest.json'
 import {message} from 'antd';
 
-const contract = require('truffle-contract')
+const contract = require('truffle-contract');
 
 export function addHospital(param) {
 
@@ -21,7 +21,8 @@ export function addHospital(param) {
             var account = accounts[0];
             listRequest.deployed().then(function(instance) {
                 listRequestInstance = instance;
-                listRequestInstance.loadHsptInfo(param.name, param.ip, param.diseaseList, {from: account})
+                listRequestInstance.loadHsptInfo(param.name, param.ip, param.diseaseList,
+                    param.address, param.level, {from: account})
                     .then(function(result) {
                         if (result === 'SUCCESS') {
                             message.info("添加新节点成功！");
