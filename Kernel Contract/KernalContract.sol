@@ -256,6 +256,18 @@ contract KernalContract {
         }
         return false;
     }
+    
+    //verify the auth type of an address 
+    //search in the authoraized_addr list 
+    function address_auth_type ( address _addr ) public constant returns ( AuthType ) {
+        uint list_length = Auth_list.length ;
+        for ( uint i = 0 ; i < list_length ; i ++ ){
+            if ( Auth_list[i].addr == _addr ){
+                return Auth_list[i].auth_type;
+            }
+        }
+        require( i != list_length , "this address has not been authorized.");
+    }
 
     // function token_generation () public constant returns (uint){
     //     // bytes memory alfbt = "abcdefghigklmnopqrstuvwxyz" ;
@@ -416,6 +428,5 @@ contract KernalContract {
     //     }
     //     return false;
     // }
-    
     
 } 
