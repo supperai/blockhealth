@@ -34,11 +34,18 @@ contract KernalContract {
     Hspt [] public AllHsptList;
     
     Auth [] public Auth_list;
+    
+    address public minter;
     // address [] public authorized_addr;
     
-    address who_can_authorizing_address;
+    // address who_can_authorizing_address;
     
-    uint randNonce = 0;
+    // uint randNonce = 0;
+    
+    //construct function of KernalContract.
+    function KernalContract() public {
+        msg.sender == minter;
+    }
     
     //////internal basic function//////
     //compare 2 string
@@ -281,8 +288,13 @@ contract KernalContract {
         //Only a specified one can authorizing address.
         // require(
         //     msg.sender == who_can_authorizing_address,
-        //     "You have no permission to authorizing address."
+        //     "You have no permission in authorizing address."
         //     );
+        
+        require(
+            msg.sender == minter,
+            "You have no permission in authorizing address."
+            );
         
         //This address has not been authorized?
         require(
