@@ -21,19 +21,19 @@ export function addHospital(param) {
             var account = accounts[0];
             listRequest.deployed().then(function(instance) {
                 listRequestInstance = instance;
-                // listRequestInstance.loadHsptInfo(param.name, param.ip, param.diseaseList,
-                //     param.address, param.level, {from: account})
-                //     .then(function(result) {
-                //         if (result === 'SUCCESS') {
-                //             message.info("添加新节点成功！");
-                //         } else {
-                //             message.error("添加新节点失败，请重新添加！");
-                //         }
-                //     })
-                listRequestInstance.getNodeAddress({from: account})
+                listRequestInstance.loadHsptInfo(param.name, param.ip, param.diseaseList,
+                    param.address, param.level, {from: account})
                     .then(function(result) {
-                        let a = result;
+                        if (result === 'SUCCESS') {
+                            message.info("添加新节点成功！");
+                        } else {
+                            message.error("添加新节点失败，请重新添加！");
+                        }
                     })
+                // listRequestInstance.getNodeAddress({from: account})
+                //     .then(function(result) {
+                //         let a = result;
+                //     })
             })
 
         })

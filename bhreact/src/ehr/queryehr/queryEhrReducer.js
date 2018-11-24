@@ -1,7 +1,7 @@
 const initialState = {
     ehrs:[],
     token: '',
-    diseaseList: [],
+    diseaseList: ['a','b'],
 };
 
 export default function (state = initialState, action) {
