@@ -23,35 +23,17 @@ contract KernalContract {
         uint auth_type;//"0"illegal\"1"admin\"2"normal\"3"research
     }
     
-    // enum AuthType {
-    //     admin,
-    //     normal,
-    //     research
-    // }
-    
     //////relations////// 
     Dss [] public AllDssList;
     Hspt [] public AllHsptList;
-    
     Auth [] public Auth_list;
     
     //////authorizing-used//////
     address  minter;//who creates KernalContract
-    
-    // address [] public authorized_addr;
-    
-    // address who_can_authorizing_address = 0xca35b7d915458ef540ade6068dfe2f44e8fa733c;
-    
-    // uint randNonce = 0;
-    
-    //construct function of KernalContract.
+
     function KernalContract()  {
         minter = msg.sender ;
         Auth_list.push(Auth({ addr:msg.sender , auth_type:1 }));
-    }
-    
-    function test() public constant returns (address){
-        return minter;
     }
     
     //////internal basic function//////
@@ -264,6 +246,7 @@ contract KernalContract {
         return;        
     }
     
+    
     ////part 2: authentication////
     //verify the authorization of an address 
     //search in the authoraized_addr list 
@@ -290,14 +273,6 @@ contract KernalContract {
         }
         require( i != list_length , "this address has not been authorized.");
     }
-
-    // function token_generation () public constant returns (uint){
-    //     // bytes memory alfbt = "abcdefghigklmnopqrstuvwxyz" ;
-    //     // bytes memory ret_token ="hspt";
-    //     uint random = uint(keccak256(now, msg.sender, randNonce++)) % 999999;
-    //     return random;
-    // }
-    
     
     //add address into Auth_list
     //only minter can authorizing address;
@@ -330,19 +305,6 @@ contract KernalContract {
     //_Ip:Hspt Ip
     //_DssList:the disease names string that the Hspt has
     //e.g. _DssList better looks like "dss1,dss2,dss3" or "dss1,dss2,dss3,"; DO NOT be like ",dss1,dss2" 
-    function loadHsptInfo( string _Name , string _Ip , string _DssList ) public returns ( string ) {
-        addHspt( _Name , _Ip );
-        if(bytes(_DssList).length==0)return;
-        uint DssAmount = strCount2c(_DssList);
-        strTmp = _DssList;
-        for( uint i = 0 ; i < DssAmount ; i++ ){
-            strSeprate(strTmp);
-            addDss(retTmp,_Name);
-        }
-        if ( i == DssAmount ) return "succeed";
-    }
-    
-    
     function loadHsptInfo
     ( 
         string _Name , 
@@ -368,7 +330,6 @@ contract KernalContract {
     }
     
     //=>all Hspt name in a string
-    //test passed
     function getAllHpstName() public constant returns ( string ) {
         
         require(address_verification( msg.sender ),"you have not been authorized.");
@@ -383,7 +344,6 @@ contract KernalContract {
     }
     
     //=>all Disease name in a string
-    //test passed
     function getAllDssName() public constant returns ( string ) {
         
         require(address_verification( msg.sender ),"you have not been authorized.");
@@ -398,7 +358,6 @@ contract KernalContract {
     }
     
     //Hspt Name => Hspt Ip
-    //test passed
     function getHpstIp( string _Name ) public constant returns ( string ){
         
         require(address_verification( msg.sender ),"you have not been authorized.");
@@ -411,7 +370,6 @@ contract KernalContract {
     }
     
     //Dss Name => all the Hspts Ip in a string that the Dss appears
-    //test passed
     function getHpstFromDss( string _DssName ) public constant returns ( string ){
         
         require(address_verification( msg.sender ),"you have not been authorized.");
@@ -442,20 +400,5 @@ contract KernalContract {
         }
         require(i==list_length-1,"you have not authorized yet.");
     }
-    
-    //1. there is a token (==_token)
-    //2. this token is not time out
-    // function token_verification ( uint _token ) public constant returns (bool) {
-    //     uint list_length = token_list.length ;
-    //     for ( uint i = 0 ; i < list_length ; i ++ ){
-    //         if ( token_list[i].token == _token ){
-    //             if( token_list[i].creation_time  + 2 hours >= now ){
-    //                 return true;
-    //             }
-    //             break;
-    //         }
-    //     }
-    //     return false;
-    // }
-    
+
 } 
