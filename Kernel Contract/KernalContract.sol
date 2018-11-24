@@ -20,14 +20,14 @@ contract KernalContract {
     struct Auth {
         address addr;
         // uint32 hspt_num;
-        AuthType auth_type;
+        uint auth_type;//"0"illegal\"1"admin\"2"normal\"3"research
     }
     
-    enum AuthType {
-        admin,
-        normal,
-        research
-    }
+    // enum AuthType {
+    //     admin,
+    //     normal,
+    //     research
+    // }
     
     //////relations////// 
     Dss [] public AllDssList;
@@ -35,16 +35,23 @@ contract KernalContract {
     
     Auth [] public Auth_list;
     
-    address public minter;
+    //////authorizing-used//////
+    address  minter;//who creates KernalContract
+    
     // address [] public authorized_addr;
     
-    // address who_can_authorizing_address;
+    // address who_can_authorizing_address = 0xca35b7d915458ef540ade6068dfe2f44e8fa733c;
     
     // uint randNonce = 0;
     
     //construct function of KernalContract.
-    function KernalContract() public {
-        msg.sender == minter;
+    function KernalContract()  {
+        minter = msg.sender ;
+        Auth_list.push(Auth({ addr:msg.sender , auth_type:1 }));
+    }
+    
+    function test() public constant returns (address){
+        return minter;
     }
     
     //////internal basic function//////
@@ -163,6 +170,7 @@ contract KernalContract {
     }
     
     //////internal function//////
+    ////part 1: list request////
     //add Hspt
     function addHspt( string _Name , string _Ip ) internal{
         for( uint i = 0 ; i < AllHsptList.length ; i++ ){
@@ -207,6 +215,8 @@ contract KernalContract {
     }
     
     //add disease
+    //if already has the Dss, do nothing;
+    //if there's no Dss named "_Name", then add it into AllDssList(HsptList is an emply string);
     function addDss( string _Name )internal{
         for( uint i = 0 ; i < AllDssList.length ; i++ ){
             if(strCompare(_Name,AllDssList[i].Name)){ //already has the Dss
@@ -219,6 +229,8 @@ contract KernalContract {
     }
     
     //add disease with their hspt name
+    //if already has the Dss, renew the HsptName of the Dss;
+    //if there's no Dss named "_Name", then add it into AllDssList;
     function addDss( string _Name ,string _HsptName )internal{
         for( uint i = 0 ; i < AllDssList.length ; i++ ){
             if(strCompare(_Name,AllDssList[i].Name)){ //already has the Dss, now add the HsptList.
@@ -252,6 +264,7 @@ contract KernalContract {
         return;        
     }
     
+    ////part 2: authentication////
     //verify the authorization of an address 
     //search in the authoraized_addr list 
     function address_verification ( address _addr ) constant returns (bool) {
@@ -264,9 +277,11 @@ contract KernalContract {
         return false;
     }
     
+    
+    //////exposed interface//////
     //verify the auth type of an address 
     //search in the authoraized_addr list 
-    function address_auth_type ( address _addr ) public constant returns ( AuthType ) {
+    function address_auth_type ( address _addr ) public constant returns ( uint ) {
         uint list_length = Auth_list.length ;
         for ( uint i = 0 ; i < list_length ; i ++ ){
             if ( Auth_list[i].addr == _addr ){
@@ -283,9 +298,12 @@ contract KernalContract {
     //     return random;
     // }
     
-    function add_authorized_address( address _addr , AuthType _AuthType ) public {
+    
+    //add address into Auth_list
+    //only minter can authorizing address;
+    function add_authorized_address( address _addr , uint _AuthType ) public {
         
-        //Only a specified one can authorizing address.
+        // Only a specified one can authorizing address.
         // require(
         //     msg.sender == who_can_authorizing_address,
         //     "You have no permission in authorizing address."
@@ -331,12 +349,12 @@ contract KernalContract {
         string _Ip , 
         string _DssList , 
         address _Addr , 
-        AuthType _AuthType
+        uint _AuthType
     ) 
     public returns ( string ) 
     {
-        require(address_verification( msg.sender ),"you have not been authorized.");
-        
+        // require( msg.sender == who_can_authorizing_address ,"you have not been authorized.");
+        require(msg.sender==minter,"You you have not been authorized.");
         addHspt( _Name , _Ip );
         if(bytes(_DssList).length==0)return;
         uint DssAmount = strCount2c(_DssList);
@@ -412,9 +430,8 @@ contract KernalContract {
         return(ret_ip);
     }
     
-    //hspt login entrance 
-    //not finished yet
-    function login () public returns ( AuthType ){
+    //hspt login entrance
+    function login () public returns ( uint ){
         address addr_tmp = msg.sender;
         uint list_length = Auth_list.length;
         for ( uint i = 0 ; i < list_length ; i ++ ){
