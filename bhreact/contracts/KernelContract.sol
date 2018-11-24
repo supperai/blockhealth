@@ -2,7 +2,7 @@ pragma solidity ^0.4.24;
 
 //test
 
-contract ListRequest {
+contract KernelContract {
     
     
     struct Dss {
@@ -16,13 +16,29 @@ contract ListRequest {
         string Name;
         string Ip;
     }
-   
-   
-   //////relations////// 
+    
+    struct Auth {
+        address addr;
+        // uint32 hspt_num;
+        AuthType auth_type;
+    }
+    
+    enum AuthType {
+        admin,
+        normal,
+        research
+    }
+    
+    //////relations////// 
     Dss [] public AllDssList;
     Hspt [] public AllHsptList;
     
+    Auth [] public Auth_list;
+    // address [] public authorized_addr;
     
+    address who_can_authorizing_address;
+    
+    uint randNonce = 0;
     
     //////internal basic function//////
     //compare 2 string
@@ -229,29 +245,56 @@ contract ListRequest {
         return;        
     }
     
-    //////request function//////
-    //input Hspt information into contract
-    //_Name:Hspt name
-    //_Ip:Hspt Ip
-    //_DssList:the disease names string that the Hspt has
-    //e.g. _DssList better looks like "dss1,dss2,dss3" or "dss1,dss2,dss3,"; DO NOT be like ",dss1,dss2" 
-    // function loadHsptInfo0( string _Name , string _Ip , string _DssList ) public{
-    //     addHspt( _Name , _Ip );
-    //     if(bytes(_DssList).length==0)return;
-    //     uint DssAmount = strCount2c(_DssList);
-    //     strTmp = _DssList;
-    //     string memory nameWith2c = strConcat(_Name,",");
-    //     for( uint i = 0 ; i < DssAmount ; i ++){
-    //         strSeprate(strTmp);
-    //         addDss(retTmp);
-    //         uint n = getDssNum(retTmp);
-    //         AllDssList[n].HsptList=strConcat(AllDssList[n].HsptList,nameWith2c);
-    //         //AllDssList[n].HsptList=strConcat(AllDssList[n].HsptList,",");
-    //     }
+    //verify the authorization of an address 
+    //search in the authoraized_addr list 
+    function address_verification ( address _addr ) constant returns (bool) {
+        uint list_length = Auth_list.length ;
+        for ( uint i = 0 ; i < list_length ; i ++ ){
+            if ( Auth_list[i].addr == _addr ){
+                return true;
+            }
+        }
+        return false;
+    }
     
+    //verify the auth type of an address 
+    //search in the authoraized_addr list 
+    function address_auth_type ( address _addr ) public constant returns ( AuthType ) {
+        uint list_length = Auth_list.length ;
+        for ( uint i = 0 ; i < list_length ; i ++ ){
+            if ( Auth_list[i].addr == _addr ){
+                return Auth_list[i].auth_type;
+            }
+        }
+        require( i != list_length , "this address has not been authorized.");
+    }
+
+    // function token_generation () public constant returns (uint){
+    //     // bytes memory alfbt = "abcdefghigklmnopqrstuvwxyz" ;
+    //     // bytes memory ret_token ="hspt";
+    //     uint random = uint(keccak256(now, msg.sender, randNonce++)) % 999999;
+    //     return random;
     // }
-
-
+    
+    function add_authorized_address( address _addr , AuthType _AuthType ) public {
+        
+        //Only a specified one can authorizing address.
+        // require(
+        //     msg.sender == who_can_authorizing_address,
+        //     "You have no permission to authorizing address."
+        //     );
+        
+        //This address has not been authorized?
+        require(
+            !address_verification(_addr),
+            "This address has already been authorized."
+            );
+        
+        Auth_list.push( Auth({ addr: _addr , auth_type: _AuthType }) );
+    }
+    
+    
+    //////request function//////
     //input Hspt information into contract
     //_Name:Hspt name
     //_Ip:Hspt Ip
@@ -266,12 +309,40 @@ contract ListRequest {
             strSeprate(strTmp);
             addDss(retTmp,_Name);
         }
-        if ( i == DssAmount ) return "SUCCESS";
+        if ( i == DssAmount ) return "succeed";
+    }
+    
+    
+    function loadHsptInfo
+    ( 
+        string _Name , 
+        string _Ip , 
+        string _DssList , 
+        address _Addr , 
+        AuthType _AuthType
+    ) 
+    public returns ( string ) 
+    {
+        require(address_verification( msg.sender ),"you have not been authorized.");
+        
+        addHspt( _Name , _Ip );
+        if(bytes(_DssList).length==0)return;
+        uint DssAmount = strCount2c(_DssList);
+        strTmp = _DssList;
+        for( uint i = 0 ; i < DssAmount ; i++ ){
+            strSeprate(strTmp);
+            addDss(retTmp,_Name);
+        }
+        add_authorized_address( _Addr , _AuthType );
+        if ( i == DssAmount ) return "succeed";
     }
     
     //=>all Hspt name in a string
     //test passed
     function getAllHpstName() public constant returns ( string ) {
+        
+        require(address_verification( msg.sender ),"you have not been authorized.");
+        
         if( AllHsptList.length == 0 ) return "no hosptial yet";//AllHsptList empty
         string memory ret ;
         for( uint i = 0 ; i < AllHsptList.length ; i++ ){
@@ -281,9 +352,27 @@ contract ListRequest {
         return ret;
     }
     
+    //=>all Disease name in a string
+    //test passed
+    function getAllDssName() public constant returns ( string ) {
+        
+        require(address_verification( msg.sender ),"you have not been authorized.");
+        
+        if( AllDssList.length == 0 ) return "no disease yet";//AllDssList empty
+        string memory ret ;
+        for( uint i = 0 ; i < AllDssList.length ; i++ ){
+            ret = strConcat(ret, AllDssList[i].Name );
+            ret = strConcat(ret, ",");
+        }
+        return ret;
+    }
+    
     //Hspt Name => Hspt Ip
     //test passed
     function getHpstIp( string _Name ) public constant returns ( string ){
+        
+        require(address_verification( msg.sender ),"you have not been authorized.");
+        
         if( AllHsptList.length == 0 ) return "no hosptial yet";
         for( uint i = 0 ; i < AllHsptList.length ; i ++ ){
             if(strCompare(_Name,AllHsptList[i].Name)) return AllHsptList[i].Ip;
@@ -294,6 +383,9 @@ contract ListRequest {
     //Dss Name => all the Hspts Ip in a string that the Dss appears
     //test passed
     function getHpstFromDss( string _DssName ) public constant returns ( string ){
+        
+        require(address_verification( msg.sender ),"you have not been authorized.");
+        
         if( bytes(_DssName).length == 0 ) return "input something";
         if( AllDssList.length == 0 ) return "no disease yet";
         if( AllHsptList.length == 0 ) return "no hosptial yet";
@@ -308,4 +400,37 @@ contract ListRequest {
         return(ret_ip);
     }
     
+    //hspt login entrance 
+    //not finished yet
+    function login () public returns ( AuthType ){
+        address addr_tmp = msg.sender;
+        uint list_length = Auth_list.length;
+        for ( uint i = 0 ; i < list_length ; i ++ ){
+            if ( Auth_list[i].addr == addr_tmp ){
+                return Auth_list[i].auth_type;
+                break;
+            }
+        }
+        require(i==list_length-1,"you have not authorized yet.");
+    }
+    
+    //1. there is a token (==_token)
+    //2. this token is not time out
+    // function token_verification ( uint _token ) public constant returns (bool) {
+    //     uint list_length = token_list.length ;
+    //     for ( uint i = 0 ; i < list_length ; i ++ ){
+    //         if ( token_list[i].token == _token ){
+    //             if( token_list[i].creation_time  + 2 hours >= now ){
+    //                 return true;
+    //             }
+    //             break;
+    //         }
+    //     }
+    //     return false;
+    // }
+
+    function getNodeAddress () public returns ( address ){
+        return msg.sender;
+    }
+
 } 
