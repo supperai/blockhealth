@@ -1,4 +1,3 @@
-// import request from '../../util/httpRequest';
 import store from "../../store";
 import KernelContract from '../../../build/contracts/KernelContract.json'
 import {message} from "antd";
@@ -44,17 +43,6 @@ export function queryEhrByDisease(param) {
                                                     });
                                                 }
                                             });
-
-                                        // request(addressList[i] + '/getEhr',
-                                        //     'GET',
-                                        //     param,
-                                        //     function (rep) {
-                                        //         dispatch({
-                                        //             type: 'QUERY_EHR',
-                                        //             data: rep,
-                                        //         });
-                                        //     },
-                                        //     dispatch);
                                     }
                                 }
                             })
@@ -128,11 +116,11 @@ export function getToken() {
                 var account = accounts[0];
                 listRequest.deployed().then(function (instance) {
                     listRequestInstance = instance;
-                    listRequestInstance.getToken({from: account})
-                        .then(function () {
-                            message.info("登录成功");
-                        });
-                    listRequestInstance.what_is_my_token()
+                    // listRequestInstance.getToken({from: account})
+                    //     .then(function () {
+                    //         message.info("登录成功");
+                    //     });
+                    listRequestInstance.whatIsMyToken()
                         .then(function (result) {
                             return dispatch({
                                 type: 'LOGIN',
@@ -144,40 +132,6 @@ export function getToken() {
             })
         }
 
-    } else {
-        console.error('Web3 is not initialized.');
-    }
-}
-
-export function login() {
-
-    let web3 = store.getState().web3.web3Instance;
-
-    if (typeof web3 !== 'undefined') {
-
-        return function(dispatch) {
-            const listRequest = contract(KernelContract);
-            listRequest.setProvider(web3.currentProvider);
-            let listRequestInstance;
-            web3.eth.getAccounts(function (error, accounts) {
-                if (error) {
-                    console.log(error);
-                }
-
-                var account = accounts[0];
-                listRequest.deployed().then(function (instance) {
-                    listRequestInstance = instance;
-                    listRequestInstance.what_is_my_token()
-                        .then(function (result) {
-                            return dispatch({
-                                type: 'LOGIN',
-                                data: result,
-                            })
-                        })
-                })
-
-            })
-        }
     } else {
         console.error('Web3 is not initialized.');
     }

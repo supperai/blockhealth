@@ -29,7 +29,7 @@ class QueryEhrQuery extends Component {
             }
             this.action.queryEhrByDisease({
                 diseaseName: query.diseaseName,
-                token: ''
+                token: token
             });
         }
     }

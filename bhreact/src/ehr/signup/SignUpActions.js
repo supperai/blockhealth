@@ -21,7 +21,7 @@ export function signUp(param) {
             var account = accounts[0];
             listRequest.deployed().then(function(instance) {
                 listRequestInstance = instance;
-                listRequestInstance.send_request(param.name, {from: account})
+                listRequestInstance.sendRequest(param.name, {from: account})
                     .then(function() {
                         message.info("申请成功，请等待审核");
                     })
