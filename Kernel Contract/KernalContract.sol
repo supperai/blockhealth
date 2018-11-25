@@ -4,39 +4,63 @@ pragma solidity ^0.4.25;
 
 contract KernalContract {
     
-    
+    //////基本类//////
+    //疾病类
     struct Dss {
         uint32 Num; //uint32 Num ∈[0,999999999]
         string Name;
         string HsptList;
     }
     
+    //医院类
     struct Hspt {
         uint32 Num;
         string Name;
         string Ip;
     }
     
+    //权限类
     struct Auth {
-        address addr;
-        // uint32 hspt_num;
-        uint auth_type;//"0"illegal\"1"admin\"2"normal\"3"research
+        address addr; //医院的地址
+        uint auth_type; //医院的权限种类：
+                        //"0"illegal非法权限
+                        //"1"admin管理员权限
+                        //"2"normal普通医院权限
+                        //"3"research医疗数据研究者
     }
     
-    //////relations////// 
+    //认证请求类
+    struct Request {
+        string hspt_name;
+        address addr;
+    }
+    
+    //token类
+    struct Token {
+        address addr;
+        string token;
+        uint creation_time;
+    }
+    
+    //////信息列表////// 
+    //依次为：疾病列表、医院列表、权限列表、认证请求列表、token列表
     Dss [] public AllDssList;
     Hspt [] public AllHsptList;
-    Auth [] public Auth_list;
+    Auth [] public AuthList;
+    Request [] public RequestList;
+    Token [] public TokenList;
     
-    //////authorizing-used//////
+    //////KernalContract合约构造//////
+    //合约构建者
     address  minter;//who creates KernalContract
-
+    //合约构造函数
     function KernalContract()  {
         minter = msg.sender ;
-        Auth_list.push(Auth({ addr:msg.sender , auth_type:1 }));
+        AuthList.push(Auth({ addr:msg.sender , auth_type:1 }));
     }
     
-    //////internal basic function//////
+    //////内部调用函数-字符串处理//////
+    //string比较
     //compare 2 string
     function strCompare(string a, string b) internal returns (bool) {
         bytes memory ba = bytes(a);
@@ -52,6 +76,7 @@ contract KernalContract {
         return true;
     }
     
+    //string拼接
     //concatenate 2 string 
     function strConcat(string _a, string _b) internal returns ( string ){
         bytes memory _ba = bytes(_a);
@@ -63,6 +88,7 @@ contract KernalContract {
         return string(bret);
     }
     
+    //string切割
     //get a piece of string slice
     function getSlice(uint begin, uint end, string text) internal pure returns (string) {
         bytes memory a = new bytes(end-begin+1);
@@ -72,7 +98,8 @@ contract KernalContract {
         return string(a);
     }
     
-    //count how many "x" in a "x1,x2,x3,x4" string 
+    //string按“,”计数
+    //count how many "x" in a "x1,x2,x3,x4" string, also
     function strCount2c(string s) internal constant returns ( uint ){
         bytes memory b = bytes(s);
         uint counter = 1;
@@ -83,7 +110,8 @@ contract KernalContract {
         }
         return counter;
     }
-    
+
+    //string按“,”切割
     //e.g. strSeprate("dalian,shanghai,beijing");
     //=>retTmp will be "dalian";strTmp will be "shanghai,beijing".
     //e.g. specially:
@@ -125,7 +153,7 @@ contract KernalContract {
     //=>retTmp will be "dalian";strTmp will be "".
     string hspt_strTmp ;
     string hspt_retTmp ; 
-    function hspt_strSeprate(string storage s) internal {
+    function hsptStrSeperate(string storage s) internal {
         bytes tmp = bytes(s);
         uint slength = tmp.length;
         if(slength == 0 ){return;}
@@ -151,7 +179,7 @@ contract KernalContract {
         }
     }
     
-    //////internal function//////
+    //////内部调用函数-列表请求与权限认证//////
     ////part 1: list request////
     //add Hspt
     function addHspt( string _Name , string _Ip ) internal{
@@ -246,77 +274,88 @@ contract KernalContract {
         return;        
     }
     
+    //随机产生一个5未的字符串
+    //generate a token
+    function tokenGeneration () constant returns (string ){
+        bytes memory alfbt = "abcdefghijklmnopqrstuvwxyz0123456789";
+        byte [5] rettmp;
+        string memory a = "qwert";
+        bytes memory ret = bytes(a);
+        uint randNonce = 0 ;
+        for( uint i = 0 ; i < 5 ; i ++ ){
+            rettmp[i] = alfbt[uint(keccak256( now, msg.sender , randNonce++)) % 36];
+        }
+        for(  i = 0 ; i < 5 ; i ++ ){
+            ret[i] = rettmp[i];
+        }
+        return string(ret);
+    }
+    
+    function tokenGeneration ( address _msgsender) constant returns (string){
+        bytes memory alfbt = "abcdefghijklmnopqrstuvwxyz0123456789";
+        byte [5] rettmp;
+        string memory a = "qwert";
+        bytes memory ret = bytes(a);
+        uint randNonce = 0 ;
+        for( uint i = 0 ; i < 5 ; i ++ ){
+            rettmp[i] = alfbt[uint(keccak256( now, _msgsender , randNonce++)) % 36];
+        }
+        for(  i = 0 ; i < 5 ; i ++ ){
+            ret[i] = rettmp[i];
+        }
+        return string(ret);
+    }
+    
     
     ////part 2: authentication////
     //verify the authorization of an address 
     //search in the authoraized_addr list 
-    function address_verification ( address _addr ) constant returns (bool) {
-        uint list_length = Auth_list.length ;
+    function addressVerfication ( address _addr ) constant returns (bool) {
+        uint list_length = AuthList.length ;
         for ( uint i = 0 ; i < list_length ; i ++ ){
-            if ( Auth_list[i].addr == _addr ){
+            if ( AuthList[i].addr == _addr ){
                 return true;
             }
         }
         return false;
     }
+
+    //add address into AuthList
+    function addAuthorizedAddress( address _addr , uint _AuthType )  {
+ 
+        //This address has not been authorized?
+        require(
+            !addressVerfication(_addr),
+            "This address has already been authorized."
+            );
+        
+        AuthList.push( Auth({ addr: _addr , auth_type: _AuthType }) );
+    }
     
-    
-    //////exposed interface//////
     //verify the auth type of an address 
     //search in the authoraized_addr list 
-    function address_auth_type ( address _addr ) public constant returns ( uint ) {
-        uint list_length = Auth_list.length ;
+    function addressAuthType ( address _addr ) constant returns ( uint ) {
+        uint list_length = AuthList.length ;
         for ( uint i = 0 ; i < list_length ; i ++ ){
-            if ( Auth_list[i].addr == _addr ){
-                return Auth_list[i].auth_type;
+            if ( AuthList[i].addr == _addr ){
+                return AuthList[i].auth_type;
             }
         }
         require( i != list_length , "this address has not been authorized.");
     }
     
-    //add address into Auth_list
-    //only minter can authorizing address;
-    function add_authorized_address( address _addr , uint _AuthType ) public {
         
-        // Only a specified one can authorizing address.
-        // require(
-        //     msg.sender == who_can_authorizing_address,
-        //     "You have no permission in authorizing address."
-        //     );
-        
-        require(
-            msg.sender == minter,
-            "You have no permission in authorizing address."
-            );
-        
-        //This address has not been authorized?
-        require(
-            !address_verification(_addr),
-            "This address has already been authorized."
-            );
-        
-        Auth_list.push( Auth({ addr: _addr , auth_type: _AuthType }) );
-    }
-    
-    
+    //////外部接口//////
     //////request function//////
     //input Hspt information into contract
     //_Name:Hspt name
     //_Ip:Hspt Ip
     //_DssList:the disease names string that the Hspt has
     //e.g. _DssList better looks like "dss1,dss2,dss3" or "dss1,dss2,dss3,"; DO NOT be like ",dss1,dss2" 
-    function loadHsptInfo
-    ( 
-        string _Name , 
-        string _Ip , 
-        string _DssList , 
-        address _Addr , 
-        uint _AuthType
-    ) 
-    public returns ( string ) 
-    {
-        // require( msg.sender == who_can_authorizing_address ,"you have not been authorized.");
-        require(msg.sender==minter,"You you have not been authorized.");
+    function loadHsptInfo( string _Name , string _Ip , string _DssList ) public returns ( string ) {
+        
+        require(addressVerfication( msg.sender ),"you have not been authorized.");
+        
         addHspt( _Name , _Ip );
         if(bytes(_DssList).length==0)return;
         uint DssAmount = strCount2c(_DssList);
@@ -325,14 +364,14 @@ contract KernalContract {
             strSeprate(strTmp);
             addDss(retTmp,_Name);
         }
-        add_authorized_address( _Addr , _AuthType );
         if ( i == DssAmount ) return "succeed";
     }
     
+    //获取列表里所有的医院名称
     //=>all Hspt name in a string
     function getAllHpstName() public constant returns ( string ) {
         
-        require(address_verification( msg.sender ),"you have not been authorized.");
+        require(addressVerfication( msg.sender ),"you have not been authorized.");
         
         if( AllHsptList.length == 0 ) return "no hosptial yet";//AllHsptList empty
         string memory ret ;
@@ -343,10 +382,11 @@ contract KernalContract {
         return ret;
     }
     
+    //获取列表里所有的疾病名称
     //=>all Disease name in a string
     function getAllDssName() public constant returns ( string ) {
         
-        require(address_verification( msg.sender ),"you have not been authorized.");
+        require(addressVerfication( msg.sender ),"you have not been authorized.");
         
         if( AllDssList.length == 0 ) return "no disease yet";//AllDssList empty
         string memory ret ;
@@ -357,10 +397,11 @@ contract KernalContract {
         return ret;
     }
     
+    //获取一种医院的IP地址
     //Hspt Name => Hspt Ip
     function getHpstIp( string _Name ) public constant returns ( string ){
         
-        require(address_verification( msg.sender ),"you have not been authorized.");
+        require(addressVerfication( msg.sender ),"you have not been authorized.");
         
         if( AllHsptList.length == 0 ) return "no hosptial yet";
         for( uint i = 0 ; i < AllHsptList.length ; i ++ ){
@@ -369,10 +410,11 @@ contract KernalContract {
         return "no such a Hspt";
     }
     
+    //获取出现一种疾病的所有医院
     //Dss Name => all the Hspts Ip in a string that the Dss appears
     function getHpstFromDss( string _DssName ) public constant returns ( string ){
         
-        require(address_verification( msg.sender ),"you have not been authorized.");
+        require(addressVerfication( msg.sender ),"you have not been authorized.");
         
         if( bytes(_DssName).length == 0 ) return "input something";
         if( AllDssList.length == 0 ) return "no disease yet";
@@ -381,24 +423,122 @@ contract KernalContract {
         hspt_strTmp = AllDssList[getDssNum(_DssName)].HsptList;
         uint HsptAmount = strCount2c(hspt_strTmp);
         for( uint i = 0 ; i < HsptAmount ; i++ ){
-            hspt_strSeprate(hspt_strTmp);
+            hsptStrSeperate(hspt_strTmp);
             ret_ip = strConcat(ret_ip,getHpstIp(hspt_retTmp));
             ret_ip = strConcat(ret_ip,",");
         }
         return(ret_ip);
     }
     
+    //医院的登陆接口
     //hspt login entrance
-    function login () public returns ( uint ){
+    function login () public constant returns ( uint ){
         address addr_tmp = msg.sender;
-        uint list_length = Auth_list.length;
+        uint list_length = AuthList.length;
         for ( uint i = 0 ; i < list_length ; i ++ ){
-            if ( Auth_list[i].addr == addr_tmp ){
-                return Auth_list[i].auth_type;
+            if ( AuthList[i].addr == addr_tmp ){
+                return AuthList[i].auth_type;
                 break;
             }
         }
         require(i==list_length-1,"you have not authorized yet.");
+    }
+    
+    //医院发送权限验证请求
+    //hspt send authorizing request.
+    function sendRequest ( string _HsptName ) public{
+        RequestList.push(Request({ hspt_name: _HsptName , addr: msg.sender }));
+    }
+    
+    //管理员处理医院提交的申请并授权
+    //只有管理员才能授权
+    function solveRequest ( string _HsptName , uint _auth_type ) public{
+        require(
+            msg.sender == minter,
+            "You have no permission in authorizing address."
+            );
+        uint list_length = RequestList.length;
+        for( uint i = 0 ; i < list_length ; i ++ ){
+            if(strCompare(_HsptName,RequestList[i].hspt_name)){
+                addAuthorizedAddress(RequestList[i].addr, _auth_type);
+                for( uint j = i ; j < list_length-1 ; j ++ ){
+                    RequestList[j] = RequestList[j+1];
+                }
+                RequestList.length--;
+                return;
+            }
+        }
+        require( i != list_length, "this hspt has not send a request.");
+    }
+    
+    //获取一个token
+    function getToken () public {
+        
+        require(addressVerfication( msg.sender ),"you have not been authorized.");
+        
+        for( uint i = 0 ; i < TokenList.length ; i ++ ){
+            if( TokenList[i].addr == msg.sender ){
+                TokenList[i].token = tokenGeneration();
+                TokenList[i].creation_time = now;
+                return;
+            }
+        }
+        TokenList.push(Token({ addr:msg.sender , token: tokenGeneration(), creation_time: now}));
+        
+    }
+    
+    //查看自己的token
+    //msg.sender => its token
+    function whatIsMyToken() public constant returns( string ){
+        
+        require(addressVerfication( msg.sender ),"you have not been authorized.");
+        
+        address tmp = msg.sender;
+        uint list_length = TokenList.length ;
+        for ( uint i = 0 ; i < list_length ; i ++ ){
+            if ( TokenList[i].addr == tmp ){
+                return TokenList[i].token;
+            }
+        }
+        require( i != list_length, "you haven't got a token yet.");
+        
+        
+    }
+    
+    //验证token的真伪
+    //1. there is a token (==_token)
+    //2. this token is not time out
+    function tokenVerification ( string _token ) public constant returns (bool) {
+        
+        require(addressVerfication( msg.sender ),"you have not been authorized.");
+        
+        uint list_length = TokenList.length ;
+        for ( uint i = 0 ; i < list_length ; i ++ ){
+            if ( strCompare(TokenList[i].token, _token )){
+                if( TokenList[i].creation_time  + 2 hours >= now ){
+                    return true;
+                }
+                break;
+            }
+        }
+        return false;
+    }
+    
+    //根据医院的token，获取医院的权限种类
+    //token => the hspt's auth_type
+    function getItsAuthType( string _token ) public constant returns ( uint ){
+        
+        require(addressVerfication( msg.sender ),"you have not been authorized.");
+
+        address tmp;
+        uint list_length = TokenList.length ;
+        for ( uint i = 0 ; i < list_length ; i ++ ){
+            if ( strCompare(TokenList[i].token , _token) ){
+                tmp =  TokenList[i].addr;
+                return addressAuthType(tmp);
+            }
+        }
+        return 0;
     }
 
 } 
