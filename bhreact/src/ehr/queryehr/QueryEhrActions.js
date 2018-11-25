@@ -1,6 +1,8 @@
-import request from '../../util/httpRequest';
+// import request from '../../util/httpRequest';
 import store from "../../store";
 import KernelContract from '../../../build/contracts/KernelContract.json'
+import {message} from "antd";
+var request = require('superagent');
 
 const contract = require('truffle-contract');
 
@@ -29,16 +31,31 @@ export function queryEhrByDisease(param) {
 
                             return dispatch(() => {
                                 for (let i=0; i<addressList.length; i++) {
-                                    request(addressList[i] + '/queryEhr',
-                                        'GET',
-                                        param,
-                                        function (rep) {
-                                            dispatch({
-                                                type: 'QUERY_EHR',
-                                                data: rep,
+                                    if (addressList[i] !== '') {
+                                        request.get(addressList[i] + '/getEhr')
+                                            .query(param)
+                                            .end(function (err, res) {
+                                                if(err){
+                                                    alert(err);
+                                                } else {
+                                                    dispatch({
+                                                        type: 'QUERY_EHR',
+                                                        data: res.body,
+                                                    });
+                                                }
                                             });
-                                        },
-                                        dispatch);
+
+                                        // request(addressList[i] + '/getEhr',
+                                        //     'GET',
+                                        //     param,
+                                        //     function (rep) {
+                                        //         dispatch({
+                                        //             type: 'QUERY_EHR',
+                                        //             data: rep,
+                                        //         });
+                                        //     },
+                                        //     dispatch);
+                                    }
                                 }
                             })
                         })
@@ -69,29 +86,97 @@ export function getDiseaseList() {
             const listRequest = contract(KernelContract);
             listRequest.setProvider(web3.currentProvider);
             let listRequestInstance;
-
-            web3.eth.getCoinbase((error, coinbase) => {
-
+            web3.eth.getAccounts(function (error, accounts) {
                 if (error) {
-                    console.error(error);
+                    console.log(error);
                 }
 
-                listRequest.deployed().then(function(instance) {
+                var account = accounts[0];
+                listRequest.deployed().then(function (instance) {
                     listRequestInstance = instance;
-                    listRequestInstance.getAllDssName()
-                        .then(function(result) {
-
-                            return dispatch(() => {
-                                return {
+                    listRequestInstance.getAllDssName({from: account})
+                        .then(function (result) {
+                            return dispatch({
                                     type: 'GET_DISEASE_LIST',
                                     data: result,
-                                }
+                                })
+                        })
+                })
+
+            })
+        }
+    } else {
+        console.error('Web3 is not initialized.');
+    }
+}
+
+export function getToken() {
+
+    let web3 = store.getState().web3.web3Instance;
+
+    if (typeof web3 !== 'undefined') {
+
+        return function(dispatch) {
+            const listRequest = contract(KernelContract);
+            listRequest.setProvider(web3.currentProvider);
+            let listRequestInstance;
+            web3.eth.getAccounts(function (error, accounts) {
+                if (error) {
+                    console.log(error);
+                }
+
+                var account = accounts[0];
+                listRequest.deployed().then(function (instance) {
+                    listRequestInstance = instance;
+                    listRequestInstance.getToken({from: account})
+                        .then(function () {
+                            message.info("登录成功");
+                        });
+                    listRequestInstance.what_is_my_token()
+                        .then(function (result) {
+                            return dispatch({
+                                type: 'LOGIN',
+                                data: result,
+                            })
+                        });
+                })
+
+            })
+        }
+
+    } else {
+        console.error('Web3 is not initialized.');
+    }
+}
+
+export function login() {
+
+    let web3 = store.getState().web3.web3Instance;
+
+    if (typeof web3 !== 'undefined') {
+
+        return function(dispatch) {
+            const listRequest = contract(KernelContract);
+            listRequest.setProvider(web3.currentProvider);
+            let listRequestInstance;
+            web3.eth.getAccounts(function (error, accounts) {
+                if (error) {
+                    console.log(error);
+                }
+
+                var account = accounts[0];
+                listRequest.deployed().then(function (instance) {
+                    listRequestInstance = instance;
+                    listRequestInstance.what_is_my_token()
+                        .then(function (result) {
+                            return dispatch({
+                                type: 'LOGIN',
+                                data: result,
                             })
                         })
                 })
 
             })
-
         }
     } else {
         console.error('Web3 is not initialized.');

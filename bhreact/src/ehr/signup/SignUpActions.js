@@ -4,7 +4,7 @@ import {message} from 'antd';
 
 const contract = require('truffle-contract');
 
-export function addHospital(param) {
+export function signUp(param) {
 
     let web3 = store.getState().web3.web3Instance;
 
@@ -21,18 +21,12 @@ export function addHospital(param) {
             var account = accounts[0];
             listRequest.deployed().then(function(instance) {
                 listRequestInstance = instance;
-                listRequestInstance.loadHsptInfo(param.name, param.ip, param.diseaseList, {from: account})
-                    .then(function(result) {
-                        // if (result === 'SUCCESS') {
-                            message.info("上传信息成功！");
-                        // } else {
-                        //     message.error("添加新节点失败，请重新添加！");
-                        // }
+                listRequestInstance.send_request(param.name, {from: account})
+                    .then(function() {
+                        message.info("申请成功，请等待审核");
                     })
             })
-
         })
-
 
     } else {
         console.error('Web3 is not initialized.');

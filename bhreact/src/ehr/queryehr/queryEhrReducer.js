@@ -1,7 +1,7 @@
 const initialState = {
     ehrs:[],
     token: '',
-    diseaseList: ['a','b'],
+    diseaseList: [],
 };
 
 export default function (state = initialState, action) {
@@ -28,12 +28,25 @@ export default function (state = initialState, action) {
 
         case 'GET_DISEASE_LIST':
             let diseases = [];
-            for (let i = 0; i < action.data.length; i++) {
-                diseases.push(action.data[i]);
+            if (action.data.length > 0) {
+                let tmpList = action.data.split(',');
+                for (let i = 0; i < tmpList.length; i++) {
+                    if (tmpList[i] !== '') {
+                        diseases.push(tmpList[i]);
+                    }
+                }
             }
+
+
             return {
                 ...state,
                 diseaseList:diseases
+            };
+
+        case 'LOGIN':
+            return {
+                ...state,
+                token:action.data
             };
 
         default:

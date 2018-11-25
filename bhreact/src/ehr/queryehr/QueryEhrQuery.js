@@ -16,12 +16,9 @@ class QueryEhrQuery extends Component {
         this.action = bindActionCreators(QueryEhrActions, props.dispatch);
     }
 
-    componentDidMount() {
-        // this.action.getDiseaseList();
-    }
-
     onQuery() {
         const query = this.props.form.getFieldsValue();
+        const {token} = this.props.queryEhr;
 
         if ((query.idNo === undefined || query.idNo === '') && (query.diseaseName === undefined || query.diseaseName === '')) {
             message.warning("请输入参数！");
@@ -32,6 +29,7 @@ class QueryEhrQuery extends Component {
             }
             this.action.queryEhrByDisease({
                 diseaseName: query.diseaseName,
+                token: ''
             });
         }
     }

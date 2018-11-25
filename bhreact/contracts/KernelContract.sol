@@ -20,35 +20,34 @@ contract KernelContract {
     struct Auth {
         address addr;
         // uint32 hspt_num;
-        AuthType auth_type;
+        uint auth_type;//"0"illegal\"1"admin\"2"normal\"3"research
     }
 
-    enum AuthType {
-        admin,
-        normal,
-        research
+    struct Request {
+        string hspt_name;
+        address addr;
+    }
+
+    struct Token {
+        address addr;
+        uint token;
+        uint creation_time;
     }
 
     //////relations//////
     Dss [] public AllDssList;
     Hspt [] public AllHsptList;
-
     Auth [] public Auth_list;
+    Request [] public Request_list;
+    Token [] public Token_list;
 
     //////authorizing-used//////
-    address public minter;
-    // address [] public authorized_addr;
+    address  minter;//who creates KernalContract
 
-    address who_can_authorizing_address = 0xca35b7d915458ef540ade6068dfe2f44e8fa733c;
-
-    // uint randNonce = 0;
-
-    //construct function of KernalContract.
-    function KernelContract() public {
-        minter = msg.sender;
+    function KernelContract()  {
+        minter = msg.sender ;
+        Auth_list.push(Auth({ addr:msg.sender , auth_type:1 }));
     }
-
-
 
     //////internal basic function//////
     //compare 2 string
@@ -260,6 +259,20 @@ contract KernelContract {
         return;
     }
 
+    //generate a token
+    function token_generation ()  constant returns (uint){
+        uint randNonce = 0 ;
+        uint ret_token = uint(keccak256(now, msg.sender, randNonce)) % 9999999;
+        return ret_token;
+    }
+
+    function token_generation ( address _msgsender) constant returns (uint){
+        uint randNonce = 0 ;
+        uint ret_token = uint(keccak256(now, _msgsender , randNonce)) % 9999999;
+        return ret_token;
+    }
+
+
     ////part 2: authentication////
     //verify the authorization of an address
     //search in the authoraized_addr list
@@ -277,7 +290,7 @@ contract KernelContract {
     //////exposed interface//////
     //verify the auth type of an address
     //search in the authoraized_addr list
-    function address_auth_type ( address _addr ) public constant returns ( AuthType ) {
+    function address_auth_type ( address _addr ) public constant returns ( uint ) {
         uint list_length = Auth_list.length ;
         for ( uint i = 0 ; i < list_length ; i ++ ){
             if ( Auth_list[i].addr == _addr ){
@@ -287,17 +300,9 @@ contract KernelContract {
         require( i != list_length , "this address has not been authorized.");
     }
 
-    // function token_generation () public constant returns (uint){
-    //     // bytes memory alfbt = "abcdefghigklmnopqrstuvwxyz" ;
-    //     // bytes memory ret_token ="hspt";
-    //     uint random = uint(keccak256(now, msg.sender, randNonce++)) % 999999;
-    //     return random;
-    // }
-
-
     //add address into Auth_list
     //only minter can authorizing address;
-    function add_authorized_address( address _addr , AuthType _AuthType ) public {
+    function add_authorized_address( address _addr , uint _AuthType )  {
 
         // Only a specified one can authorizing address.
         // require(
@@ -305,10 +310,7 @@ contract KernelContract {
         //     "You have no permission in authorizing address."
         //     );
 
-        // require(
-        //     msg.sender == minter,
-        //     "You have no permission in authorizing address."
-        //     );
+
 
         //This address has not been authorized?
         require(
@@ -327,48 +329,25 @@ contract KernelContract {
     //_DssList:the disease names string that the Hspt has
     //e.g. _DssList better looks like "dss1,dss2,dss3" or "dss1,dss2,dss3,"; DO NOT be like ",dss1,dss2"
     function loadHsptInfo( string _Name , string _Ip , string _DssList ) public returns ( string ) {
-        addHspt( _Name , _Ip );
-        if(bytes(_DssList).length==0)return;
-        uint DssAmount = strCount2c(_DssList);
-        strTmp = _DssList;
-        for( uint i = 0 ; i < DssAmount ; i++ ){
-            strSeprate(strTmp);
-            addDss(retTmp,_Name);
-        }
-        if ( i == DssAmount ) return "succeed";
-    }
 
-
-    function loadHsptInfo
-    (
-        string _Name ,
-        string _Ip ,
-        string _DssList ,
-        address _Addr ,
-        AuthType _AuthType
-    )
-    public returns ( string )
-    {
-        require( msg.sender == who_can_authorizing_address ,"you have not been authorized.");
-        
-        addHspt( _Name , _Ip );
-        if(bytes(_DssList).length==0)return;
-        uint DssAmount = strCount2c(_DssList);
-        strTmp = _DssList;
-        for( uint i = 0 ; i < DssAmount ; i++ ){
-            strSeprate(strTmp);
-            addDss(retTmp,_Name);
-        }
-        add_authorized_address( _Addr , _AuthType );
-        if ( i == DssAmount ) return "succeed";
-    }
-    
-    //=>all Hspt name in a string
-    //test passed
-    function getAllHpstName() public constant returns ( string ) {
-        
         require(address_verification( msg.sender ),"you have not been authorized.");
-        
+
+        addHspt( _Name , _Ip );
+        if(bytes(_DssList).length==0)return;
+        uint DssAmount = strCount2c(_DssList);
+        strTmp = _DssList;
+        for( uint i = 0 ; i < DssAmount ; i++ ){
+            strSeprate(strTmp);
+            addDss(retTmp,_Name);
+        }
+        if ( i == DssAmount ) return "succeed";
+    }
+
+    //=>all Hspt name in a string
+    function getAllHpstName() public constant returns ( string ) {
+
+        require(address_verification( msg.sender ),"you have not been authorized.");
+
         if( AllHsptList.length == 0 ) return "no hosptial yet";//AllHsptList empty
         string memory ret ;
         for( uint i = 0 ; i < AllHsptList.length ; i++ ){
@@ -377,13 +356,12 @@ contract KernelContract {
         }
         return ret;
     }
-    
+
     //=>all Disease name in a string
-    //test passed
     function getAllDssName() public constant returns ( string ) {
-        
+
         require(address_verification( msg.sender ),"you have not been authorized.");
-        
+
         if( AllDssList.length == 0 ) return "no disease yet";//AllDssList empty
         string memory ret ;
         for( uint i = 0 ; i < AllDssList.length ; i++ ){
@@ -392,26 +370,24 @@ contract KernelContract {
         }
         return ret;
     }
-    
+
     //Hspt Name => Hspt Ip
-    //test passed
     function getHpstIp( string _Name ) public constant returns ( string ){
-        
+
         require(address_verification( msg.sender ),"you have not been authorized.");
-        
+
         if( AllHsptList.length == 0 ) return "no hosptial yet";
         for( uint i = 0 ; i < AllHsptList.length ; i ++ ){
             if(strCompare(_Name,AllHsptList[i].Name)) return AllHsptList[i].Ip;
         }
         return "no such a Hspt";
     }
-    
+
     //Dss Name => all the Hspts Ip in a string that the Dss appears
-    //test passed
     function getHpstFromDss( string _DssName ) public constant returns ( string ){
-        
+
         require(address_verification( msg.sender ),"you have not been authorized.");
-        
+
         if( bytes(_DssName).length == 0 ) return "input something";
         if( AllDssList.length == 0 ) return "no disease yet";
         if( AllHsptList.length == 0 ) return "no hosptial yet";
@@ -425,10 +401,9 @@ contract KernelContract {
         }
         return(ret_ip);
     }
-    
-    //hspt login entrance 
-    //not finished yet
-    function login () public returns ( AuthType ){
+
+    //hspt login entrance
+    function login () public constant returns ( uint ){
         address addr_tmp = msg.sender;
         uint list_length = Auth_list.length;
         for ( uint i = 0 ; i < list_length ; i ++ ){
@@ -439,20 +414,84 @@ contract KernelContract {
         }
         require(i==list_length-1,"you have not authorized yet.");
     }
-    
+
+    //hspt send authorizing request.
+    function send_request ( string _HsptName ) public{
+        Request_list.push(Request({ hspt_name: _HsptName , addr: msg.sender }));
+    }
+
+
+    function solve_request ( string _HsptName , uint _auth_type ) public{
+        require(
+            msg.sender == minter,
+            "You have no permission in authorizing address."
+            );
+        uint list_length = Request_list.length;
+        for( uint i = 0 ; i < list_length ; i ++ ){
+            if(strCompare(_HsptName,Request_list[i].hspt_name)){
+                add_authorized_address(Request_list[i].addr, _auth_type);
+                return;
+            }
+        }
+        require( i != list_length, "this hspt has not send a request.");
+    }
+
+    function getToken () public returns ( uint ){
+
+        require(address_verification( msg.sender ),"you have not been authorized.");
+
+        Token_list.push(Token({ addr:msg.sender , token: token_generation(), creation_time: now}));
+
+
+    }
+
+    function what_is_my_token() public constant returns( uint ){
+
+        require(address_verification( msg.sender ),"you have not been authorized.");
+
+        address tmp = msg.sender;
+        uint list_length = Token_list.length ;
+        for ( uint i = 0 ; i < list_length ; i ++ ){
+            if ( Token_list[i].addr == tmp ){
+                return Token_list[i].token;
+            }
+        }
+        require( i != list_length, "you haven't got a token yet.");
+
+
+    }
+
     //1. there is a token (==_token)
     //2. this token is not time out
-    // function token_verification ( uint _token ) public constant returns (bool) {
-    //     uint list_length = token_list.length ;
-    //     for ( uint i = 0 ; i < list_length ; i ++ ){
-    //         if ( token_list[i].token == _token ){
-    //             if( token_list[i].creation_time  + 2 hours >= now ){
-    //                 return true;
-    //             }
-    //             break;
-    //         }
-    //     }
-    //     return false;
-    // }
-    
-} 
+    function token_verification ( uint _token ) public constant returns (bool) {
+
+        require(address_verification( msg.sender ),"you have not been authorized.");
+
+        uint list_length = Token_list.length ;
+        for ( uint i = 0 ; i < list_length ; i ++ ){
+            if ( Token_list[i].token == _token ){
+                if( Token_list[i].creation_time  + 2 hours >= now ){
+                    return true;
+                }
+                break;
+            }
+        }
+        return false;
+    }
+
+    function get_its_auth_type( uint _token ) public constant returns ( uint ){
+
+        require(address_verification( msg.sender ),"you have not been authorized.");
+
+        address tmp;
+        uint list_length = Token_list.length ;
+        for ( uint i = 0 ; i < list_length ; i ++ ){
+            if ( Token_list[i].token == _token ){
+                tmp =  Token_list[i].addr;
+                return address_auth_type(tmp);
+            }
+        }
+        return 0;
+    }
+
+}

@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
-import AddHospitalForm from './AddHospitalForm';
+import SignUpForm from './SignUpForm';
 
-export class AddHospitalContainer extends Component {
+export class SignUpContainer extends Component {
 
     render() {
         return (
             <div className="form">
-                <AddHospitalForm/>
+                <SignUpForm/>
             </div>
         );
     }

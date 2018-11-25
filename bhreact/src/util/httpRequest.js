@@ -10,12 +10,12 @@ export default function (address, type = 'POST', params = {}, sucFuc, dispatch, 
         params.searchFields = {};
     }
 
-    let hostname = window.location.hostname;
-    if ((hostname.indexOf("localhost") !== -1 || hostname.indexOf("0.0.0.0") !== -1) && window.location.port.charAt(0) === "3") {
-        type = 'GET';
-        postfix = ".json";
-        urlPositfix = 'server/';
-    }
+    // let hostname = window.location.hostname;
+    // if ((hostname.indexOf("localhost") !== -1 || hostname.indexOf("0.0.0.0") !== -1) && window.location.port.charAt(0) === "3") {
+    //     type = 'GET';
+    //     postfix = ".json";
+    //     urlPositfix = 'server/';
+    // }
 
     // if (loading) {
     //     dispatch({
@@ -28,7 +28,7 @@ export default function (address, type = 'POST', params = {}, sucFuc, dispatch, 
 
     let ajaxParam = {
         type: type,
-        url: urlPositfix + address + postfix + '?cacheId=' + (+new Date()),
+        url: urlPositfix + address + postfix,
         success: function (data) {
             // if (loading) {
             //     dispatch({
@@ -81,5 +81,13 @@ export default function (address, type = 'POST', params = {}, sucFuc, dispatch, 
             }
         }
     };
+
+    if (type == "GET") {
+        ajaxParam['data'] = JSON.stringify(params);
+    } else {
+        ajaxParam['data'] = JSON.stringify(params);
+        ajaxParam["contentType"] = "application/json; charset=utf-8";
+    }
+
     $.ajax(ajaxParam);
 }
