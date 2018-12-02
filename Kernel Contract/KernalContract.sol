@@ -54,15 +54,16 @@ contract KernalContract {
     //合约构建者
     address  minter;//who creates KernalContract
     //合约构造函数
-    function KernalContract()  {
+    constructor() public {
         minter = msg.sender ;
         AuthList.push(Auth({ addr:msg.sender , auth_type:1 }));
     }
     
+    
     //////内部调用函数-字符串处理//////
     //string比较
     //compare 2 string
-    function strCompare(string a, string b) internal returns (bool) {
+    function strCompare(string memory a, string memory b) internal returns (bool) {
         bytes memory ba = bytes(a);
         bytes memory bb = bytes(b);
         if (ba.length != bb.length) {
@@ -78,7 +79,7 @@ contract KernalContract {
     
     //string拼接
     //concatenate 2 string 
-    function strConcat(string _a, string _b) internal returns ( string ){
+    function strConcat(string memory _a, string memory _b) internal returns ( string memory ){
         bytes memory _ba = bytes(_a);
         bytes memory _bb = bytes(_b);
         bytes memory bret = new bytes(_ba.length + _bb.length);
@@ -90,7 +91,7 @@ contract KernalContract {
     
     //string切割
     //get a piece of string slice
-    function getSlice(uint begin, uint end, string text) internal pure returns (string) {
+    function getSlice(uint begin, uint end, string memory text) internal pure returns ( string memory ) {
         bytes memory a = new bytes(end-begin+1);
         for( uint i = 0; i<=end-begin ; i++ ){
             a[i] = bytes(text)[i+begin-1];
@@ -100,7 +101,7 @@ contract KernalContract {
     
     //string按“,”计数
     //count how many "x" in a "x1,x2,x3,x4" string, also
-    function strCount2c(string s) internal constant returns ( uint ){
+    function strCount2c(string memory s) internal view returns ( uint ){
         bytes memory b = bytes(s);
         uint counter = 1;
         for ( uint i = 0 ; i < b.length ; i++ ){
@@ -182,7 +183,7 @@ contract KernalContract {
     //////内部调用函数-列表请求与权限认证//////
     ////part 1: list request////
     //add Hspt
-    function addHspt( string _Name , string _Ip ) internal{
+    function addHspt( string memory _Name , string memory _Ip ) internal{
         for( uint i = 0 ; i < AllHsptList.length ; i++ ){
             if(strCompare(_Name,AllHsptList[i].Name)){ //change previous IP;
                 AllHsptList[i].Ip = _Ip;
@@ -194,7 +195,7 @@ contract KernalContract {
     }
     
     //add Hspt without Ip
-    function addHspt( string _Name ) internal {
+    function addHspt( string memory _Name ) internal {
         for( uint i = 0 ; i < AllHsptList.length ; i++ ){
             if(strCompare(_Name,AllHsptList[i].Name)){ 
                 return;
@@ -205,7 +206,7 @@ contract KernalContract {
     } 
     
     //Hspt Name => Hspt Num
-    function getHpstNum( string _Name ) internal constant returns ( uint ){
+    function getHpstNum( string memory _Name ) internal view returns ( uint ){
         for( uint i = 0 ; i < AllHsptList.length ; i++ ){
             if(strCompare(_Name,AllHsptList[i].Name)){ 
                 return i;
@@ -215,7 +216,7 @@ contract KernalContract {
     }
     
     //is a Hspt called "_Name" here in the list?
-    function isHpstHere( string _Name ) internal constant returns (bool){
+    function isHpstHere( string memory _Name ) internal view returns (bool){
         for( uint i = 0 ; i < AllHsptList.length ; i++ ){
             if(strCompare(_Name,AllHsptList[i].Name)){ 
                 return true;
@@ -227,21 +228,21 @@ contract KernalContract {
     //add disease
     //if already has the Dss, do nothing;
     //if there's no Dss named "_Name", then add it into AllDssList(HsptList is an emply string);
-    function addDss( string _Name )internal{
+    function addDss( string memory _Name )internal{
         for( uint i = 0 ; i < AllDssList.length ; i++ ){
             if(strCompare(_Name,AllDssList[i].Name)){ //already has the Dss
                 return;
             }
         }
         uint32 n = uint32(AllDssList.length);
-        string str ;
+        string memory str ;
         AllDssList.push( Dss({ Num:n , Name:_Name , HsptList:str }) );
     }
     
     //add disease with their hspt name
     //if already has the Dss, renew the HsptName of the Dss;
     //if there's no Dss named "_Name", then add it into AllDssList;
-    function addDss( string _Name ,string _HsptName )internal{
+    function addDss( string memory _Name ,string memory _HsptName )internal{
         for( uint i = 0 ; i < AllDssList.length ; i++ ){
             if(strCompare(_Name,AllDssList[i].Name)){ //already has the Dss, now add the HsptList.
                 string memory str1 = strConcat(_HsptName,",") ;
@@ -255,7 +256,7 @@ contract KernalContract {
     }
     
     //is a disease called "_Name" here in the list?
-    function isDssHere( string _Name ) internal constant returns (bool){
+    function isDssHere( string memory _Name ) internal view returns (bool){
         for( uint i = 0 ; i < AllDssList.length ; i++ ){
             if(strCompare(_Name,AllDssList[i].Name)){ //already has the Dss
                 return true;
@@ -265,7 +266,7 @@ contract KernalContract {
     }
     
     //Dss Name => Dss Num 
-    function getDssNum( string _Name ) internal constant returns ( uint ){
+    function getDssNum( string memory _Name ) internal view returns ( uint ){
         for( uint i = 0 ; i < AllDssList.length ; i++ ){
             if(strCompare(_Name,AllDssList[i].Name)){ //already has the Dss
                 return i;
@@ -276,7 +277,7 @@ contract KernalContract {
     
     //随机产生一个5未的字符串
     //generate a token
-    function tokenGeneration () constant returns (string ){
+    function tokenGeneration () view returns (string memory ){
         bytes memory alfbt = "abcdefghijklmnopqrstuvwxyz0123456789";
         byte [5] rettmp;
         string memory a = "qwert";
@@ -291,7 +292,7 @@ contract KernalContract {
         return string(ret);
     }
     
-    function tokenGeneration ( address _msgsender) constant returns (string){
+    function tokenGeneration ( address _msgsender) view returns ( string memory ){
         bytes memory alfbt = "abcdefghijklmnopqrstuvwxyz0123456789";
         byte [5] rettmp;
         string memory a = "qwert";
@@ -310,7 +311,7 @@ contract KernalContract {
     ////part 2: authentication////
     //verify the authorization of an address 
     //search in the authoraized_addr list 
-    function addressVerfication ( address _addr ) constant returns (bool) {
+    function addressVerfication ( address _addr ) view returns (bool) {
         uint list_length = AuthList.length ;
         for ( uint i = 0 ; i < list_length ; i ++ ){
             if ( AuthList[i].addr == _addr ){
@@ -334,7 +335,7 @@ contract KernalContract {
     
     //verify the auth type of an address 
     //search in the authoraized_addr list 
-    function addressAuthType ( address _addr ) constant returns ( uint ) {
+    function addressAuthType ( address _addr ) view returns ( uint ) {
         uint list_length = AuthList.length ;
         for ( uint i = 0 ; i < list_length ; i ++ ){
             if ( AuthList[i].addr == _addr ){
@@ -352,7 +353,7 @@ contract KernalContract {
     //_Ip:Hspt Ip
     //_DssList:the disease names string that the Hspt has
     //e.g. _DssList better looks like "dss1,dss2,dss3" or "dss1,dss2,dss3,"; DO NOT be like ",dss1,dss2" 
-    function loadHsptInfo( string _Name , string _Ip , string _DssList ) public returns ( string ) {
+    function loadHsptInfo( string memory _Name , string memory _Ip , string memory _DssList ) public returns ( string memory ) {
         
         require(addressVerfication( msg.sender ),"you have not been authorized.");
         
@@ -369,7 +370,7 @@ contract KernalContract {
     
     //获取列表里所有的医院名称
     //=>all Hspt name in a string
-    function getAllHpstName() public constant returns ( string ) {
+    function getAllHpstName() public view returns ( string memory ) {
         
         require(addressVerfication( msg.sender ),"you have not been authorized.");
         
@@ -382,9 +383,22 @@ contract KernalContract {
         return ret;
     }
     
+    function getAllHpstIp() public view returns ( string memory ){
+        
+        require(addressVerfication( msg.sender ),"you have not been authorized.");
+        
+        if( AllHsptList.length == 0 ) return "no hosptial yet";//AllHsptList empty
+        string memory ret ;
+        for( uint i = 0 ; i < AllHsptList.length ; i++ ){
+            ret = strConcat(ret, AllHsptList[i].Ip );
+            ret = strConcat(ret, ",");
+        }
+        return ret;
+    }
+    
     //获取列表里所有的疾病名称
     //=>all Disease name in a string
-    function getAllDssName() public constant returns ( string ) {
+    function getAllDssName() public view returns ( string memory ) {
         
         require(addressVerfication( msg.sender ),"you have not been authorized.");
         
@@ -399,7 +413,7 @@ contract KernalContract {
     
     //获取一种医院的IP地址
     //Hspt Name => Hspt Ip
-    function getHpstIp( string _Name ) public constant returns ( string ){
+    function getHpstIp( string memory _Name ) public view returns ( string memory ){
         
         require(addressVerfication( msg.sender ),"you have not been authorized.");
         
@@ -412,7 +426,7 @@ contract KernalContract {
     
     //获取出现一种疾病的所有医院
     //Dss Name => all the Hspts Ip in a string that the Dss appears
-    function getHpstFromDss( string _DssName ) public constant returns ( string ){
+    function getHpstFromDss( string memory _DssName ) public view returns ( string memory ){
         
         require(addressVerfication( msg.sender ),"you have not been authorized.");
         
@@ -432,7 +446,7 @@ contract KernalContract {
     
     //医院的登陆接口
     //hspt login entrance
-    function login () public constant returns ( uint ){
+    function login () public view returns ( uint ){
         address addr_tmp = msg.sender;
         uint list_length = AuthList.length;
         for ( uint i = 0 ; i < list_length ; i ++ ){
@@ -446,13 +460,13 @@ contract KernalContract {
     
     //医院发送权限验证请求
     //hspt send authorizing request.
-    function sendRequest ( string _HsptName ) public{
+    function sendRequest ( string memory _HsptName ) public{
         RequestList.push(Request({ hspt_name: _HsptName , addr: msg.sender }));
     }
     
     //管理员处理医院提交的申请并授权
     //只有管理员才能授权
-    function solveRequest ( string _HsptName , uint _auth_type ) public{
+    function solveRequest ( string memory _HsptName , uint _auth_type ) public{
         require(
             msg.sender == minter,
             "You have no permission in authorizing address."
@@ -489,7 +503,7 @@ contract KernalContract {
     
     //查看自己的token
     //msg.sender => its token
-    function whatIsMyToken() public constant returns( string ){
+    function whatIsMyToken() public view returns( string memory ){
         
         require(addressVerfication( msg.sender ),"you have not been authorized.");
         
@@ -508,7 +522,7 @@ contract KernalContract {
     //验证token的真伪
     //1. there is a token (==_token)
     //2. this token is not time out
-    function tokenVerification ( string _token ) public constant returns (bool) {
+    function tokenVerification ( string memory _token ) public view returns (bool) {
         
         require(addressVerfication( msg.sender ),"you have not been authorized.");
         
@@ -526,7 +540,7 @@ contract KernalContract {
     
     //根据医院的token，获取医院的权限种类
     //token => the hspt's auth_type
-    function getItsAuthType( string _token ) public constant returns ( uint ){
+    function getItsAuthType( string memory _token ) public view returns ( uint ){
         
         require(addressVerfication( msg.sender ),"you have not been authorized.");
 
