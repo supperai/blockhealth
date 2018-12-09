@@ -1,5 +1,5 @@
 import GetAddress.getAddress;
-import myThread.sqlthread;
+import myThread.SqlThread;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,8 +17,9 @@ public class Main {
         List<Future<List>> result=new ArrayList<Future<List>>();
         if (addrlist.size()!=0){
             for(int i=0;i<addrlist.size();i++){
-                sqlthread mysqlthread=new sqlthread(addrlist.get(i),1);
-                Future<List> res=executor.submit(mysqlthread);
+                SqlThread sqlthread=new SqlThread(addrlist.get(i),"",1);
+                sqlthread.call();
+                Future<List> res=executor.submit(sqlthread);
                 result.add(res);
             }
         }
