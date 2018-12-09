@@ -57,6 +57,58 @@ export function queryEhrByDisease(param) {
     }
 }
 
+export function queryEhrById(param) {
+
+    let web3 = store.getState().web3.web3Instance;
+
+    if (typeof web3 !== 'undefined') {
+
+        return function(dispatch) {
+            const listRequest = contract(KernelContract);
+            listRequest.setProvider(web3.currentProvider);
+            let listRequestInstance;
+
+            web3.eth.getCoinbase((error, coinbase) => {
+
+                if (error) {
+                    console.error(error);
+                }
+
+                listRequest.deployed().then(function(instance) {
+                    listRequestInstance = instance;
+                    listRequestInstance.getAllHpst(param.diseaseName)
+                        .then(function(result) {
+                            let addressList = result.split(',');
+
+                            return dispatch(() => {
+                                for (let i=0; i<addressList.length; i++) {
+                                    if (addressList[i] !== '') {
+                                        request.get(addressList[i] + '/getEhrById')
+                                            .query(param)
+                                            .end(function (err, res) {
+                                                if(err){
+                                                    alert(err);
+                                                } else {
+                                                    dispatch({
+                                                        type: 'QUERY_EHR',
+                                                        data: res.body,
+                                                    });
+                                                }
+                                            });
+                                    }
+                                }
+                            })
+                        })
+                })
+
+            })
+
+        }
+    } else {
+        console.error('Web3 is not initialized.');
+    }
+}
+
 export function clearEhrs(param) {
     return {
         type: 'CLEAR_EHRS',
