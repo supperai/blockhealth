@@ -27,10 +27,17 @@ class QueryEhrQuery extends Component {
             while (ehrs.length > 0) {
                 this.action.clearEhrs();
             }
-            this.action.queryEhrByDisease({
-                diseaseName: query.diseaseName,
-                token: token
-            });
+            if ((query.idNo !== undefined || query.idNo !== '')) {
+                this.action.queryEhrById({
+                    idNo: query.idNo,
+                    token: token
+                })
+            } else {
+                this.action.queryEhrByDisease({
+                    diseaseName: query.diseaseName,
+                    token: token
+                });
+            }
         }
     }
 
@@ -44,11 +51,11 @@ class QueryEhrQuery extends Component {
                         <Row type="flex" gutter={0}>
                             <Col sm={6}>
                                 <FormItem
-                                    label="身份证号:"
+                                    label="医疗编号:"
                                     labelCol={{span: 8}}
                                     wrapperCol={{span: 15}}
                                 >
-                                    <Input placeholder="请输入身份证号" {...getFieldProps('idNo')} size="default"/>
+                                    <Input placeholder="请输入医疗编号" {...getFieldProps('idNo')} size="default"/>
                                 </FormItem>
                             </Col>
                             <Col sm={6}>
