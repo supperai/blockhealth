@@ -1,21 +1,21 @@
 package com.example.demo.service;
-import com.example.demo.SmartContact.KernalContract_sol_KernalContract;
+import com.example.demo.SmartContact.KCwithoutTime_sol_KernalContract;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.web3j.abi.datatypes.Address;
-import org.web3j.abi.datatypes.generated.Uint256;
+import org.web3j.abi.datatypes.Bool;
+import org.web3j.abi.datatypes.Utf8String;
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.Web3j;
-import org.web3j.protocol.core.RemoteCall;
 import org.web3j.protocol.http.HttpService;
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
-import java.util.concurrent.Callable;
+
 
 @Service
 public class EhrService {
@@ -28,11 +28,15 @@ public class EhrService {
     }
 
     public List<List<Object>> getColumn(String token,List<String> list2){
-        // TODO: 2018/12/14  补权限验证
-        return dataSqlService.getColumn(list2);
+        //权限验证
+        if(authVert(token)) {
+            return dataSqlService.getColumn(list2);
+        } else {
+            throw new RuntimeException("无权限！");
+        }
     }
 
-    public RemoteCall<Uint256> authVert(Address address){
+    public Boolean authVert(String token){
         //建立以太坊连接
         String URL = "http://127.0.0.1:8080/";
         Web3j web3j = Web3j.build(new HttpService(URL));
@@ -40,7 +44,7 @@ public class EhrService {
         //加载账户信息
         Credentials credentials = null;
         try {
-            credentials = WalletUtils.loadCredentials("123","H:/app/Ethereum/Blockchain Env/node2/keystore/UTC--2018-11-25T07-09-10.097000000Z--228e8a2bf3b4005de6c9551102d2156811d41f2c");
+            credentials = WalletUtils.loadCredentials("123","D:/Blockchain/node4/keystore/UTC--2018-12-14T04-06-02.245461600Z--df88e440b952ff9ab645e3bf357db380b030a83d");
             System.out.println("credentials=" + credentials.getAddress());
         } catch (IOException e1) {
             // TODO Auto-generated catch block
@@ -49,39 +53,18 @@ public class EhrService {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
+        String address1="0x90566abecc2d94f2934f30bd388354500d3dd6dc";
+        KCwithoutTime_sol_KernalContract kCwithoutTime_sol_kernalContract=KCwithoutTime_sol_KernalContract.load(address1,web3j,credentials,BigInteger.valueOf(200000),BigInteger.valueOf(20000000));
 
-        //部署 Compute_sol_Compute.java （智能合约）
-        KernalContract_sol_KernalContract kernalContract_sol_KernalContract = null;
+        Bool result = null;
         try {
-            kernalContract_sol_KernalContract = KernalContract_sol_KernalContract.deploy(web3j, credentials, BigInteger.valueOf(200000), BigInteger.valueOf(20000000)).send();
-        } catch (Exception e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-
-        //部署完成后打印合约地址
-        String address1=kernalContract_sol_KernalContract.getContractAddress();
-        System.out.println(kernalContract_sol_KernalContract.getContractAddress());
-
-        KernalContract_sol_KernalContract kernalContract_sol_kernalContract=KernalContract_sol_KernalContract.load(address1,web3j,credentials,BigInteger.valueOf(200000),BigInteger.valueOf(20000000));
-
-        //查看合约是否可用
-        try {
-            System.out.println(kernalContract_sol_kernalContract.isValid());
-        } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-        //0 admin 1 common 2 research
-        RemoteCall<Uint256> result = null;
-        try {
-            result=kernalContract_sol_kernalContract.address_auth_type(address);
-            System.out.println(result);
+            result=kCwithoutTime_sol_kernalContract.tokenVerification(new Utf8String(token)).send();
+            System.out.println(result.getValue());
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
-        return result;
+        return result.getValue();
     }
 }

@@ -37,6 +37,7 @@ public class InfoDaoEM {
         SQL=SQL+" from ehr";
         System.out.println(SQL);
         List<List<Object>> result=entityManager.createNativeQuery(SQL).getResultList();
+        System.out.println(result.size());
         return result;
     }
 }
