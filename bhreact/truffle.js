@@ -8,7 +8,7 @@ module.exports = {
             network_id: '*' // Match any network id
         },
         privatenetwork: {
-            host: '127.0.0.1',
+            host: '10.0.3.161',
             port: 8080,
             network_id: 100
         }
