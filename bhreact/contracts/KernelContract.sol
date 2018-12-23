@@ -2,7 +2,7 @@ pragma solidity ^0.4.24;
 
 //test
 
-contract KernelContract {
+contract KernalContract {
     
     //////基本类//////
     //疾病类
@@ -39,7 +39,7 @@ contract KernelContract {
     struct Token {
         address addr;
         string token;
-        uint creation_time;
+        // uint creation_time;
     }
     
     //////信息列表////// 
@@ -54,7 +54,7 @@ contract KernelContract {
     //合约构建者
     address  minter;//who creates KernalContract
     //合约构造函数
-    function KernelContract()  {
+    function KernalContract()  {
         minter = msg.sender ;
         AuthList.push(Auth({ addr:msg.sender , auth_type:1 }));
     }
@@ -74,6 +74,16 @@ contract KernelContract {
             }
         }
         return true;
+    }
+    
+    function strSearch( string s1, string s2 ) internal returns (bool) {
+        bytes memory b1 = bytes(s1);
+        bytes memory b2 = bytes(s2);
+        for ( uint i = 0 ; i < b1.length ; i ++ ){
+            for (uint j = 0 ; j < b2.length&&b1[i+j] == b2[j] ; j ++ ){}
+            if( j == b2.length ) return true;
+        }
+        return false;
     }
     
     //string拼接
@@ -244,9 +254,14 @@ contract KernelContract {
     function addDss( string _Name ,string _HsptName )internal{
         for( uint i = 0 ; i < AllDssList.length ; i++ ){
             if(strCompare(_Name,AllDssList[i].Name)){ //already has the Dss, now add the HsptList.
-                string memory str1 = strConcat(_HsptName,",") ;
-                AllDssList[i].HsptList = strConcat(AllDssList[i].HsptList,str1);
-                return;
+                if(strSearch(AllDssList[i].HsptList,_HsptName)) {
+                    return;
+                }
+                else{
+                    string memory str1 = strConcat(_HsptName,",") ;
+                    AllDssList[i].HsptList = strConcat(AllDssList[i].HsptList,str1);
+                    return;
+                }
             }
         }
         uint32 n = uint32(AllDssList.length);
@@ -292,17 +307,18 @@ contract KernelContract {
     }
     
     function tokenGeneration ( address _msgsender) constant returns (string){
-        bytes memory alfbt = "abcdefghijklmnopqrstuvwxyz0123456789";
-        byte [5] rettmp;
-        string memory a = "qwert";
-        bytes memory ret = bytes(a);
-        uint randNonce = 0 ;
-        for( uint i = 0 ; i < 5 ; i ++ ){
-            rettmp[i] = alfbt[uint(keccak256( now, _msgsender , randNonce++)) % 36];
-        }
-        for(  i = 0 ; i < 5 ; i ++ ){
-            ret[i] = rettmp[i];
-        }
+        // bytes memory alfbt = "abcdefghijklmnopqrstuvwxyz0123456789";
+        // byte [5] rettmp;
+        // string memory a = "qwert";
+        // bytes memory ret = bytes(a);
+        // uint randNonce = 0 ;
+        // for( uint i = 0 ; i < 5 ; i ++ ){
+        //     rettmp[i] = alfbt[uint(keccak256( now, _msgsender , randNonce++)) % 36];
+        // }
+        // for(  i = 0 ; i < 5 ; i ++ ){
+        //     ret[i] = rettmp[i];
+        // }
+        bytes memory ret = "aaaaa";
         return string(ret);
     }
     
@@ -382,6 +398,18 @@ contract KernelContract {
         return ret;
     }
     
+    function getAllHpstIp() public view returns ( string memory ){
+        
+        require(addressVerfication( msg.sender ),"you have not been authorized.");
+        
+        if( AllHsptList.length == 0 ) return "no hosptial yet";//AllHsptList empty
+        string memory ret ;
+        for( uint i = 0 ; i < AllHsptList.length ; i++ ){
+            ret = strConcat(ret, AllHsptList[i].Ip );
+            ret = strConcat(ret, ",");
+        }
+        return ret;
+    }
     //获取列表里所有的疾病名称
     //=>all Disease name in a string
     function getAllDssName() public constant returns ( string ) {
@@ -479,11 +507,11 @@ contract KernelContract {
         for( uint i = 0 ; i < TokenList.length ; i ++ ){
             if( TokenList[i].addr == msg.sender ){
                 TokenList[i].token = tokenGeneration();
-                TokenList[i].creation_time = now;
+                // TokenList[i].creation_time = now;
                 return;
             }
         }
-        TokenList.push(Token({ addr:msg.sender , token: tokenGeneration(), creation_time: now}));
+        TokenList.push(Token({ addr:msg.sender , token: tokenGeneration()/*, creation_time: now*/}));
         
     }
     
@@ -515,10 +543,10 @@ contract KernelContract {
         uint list_length = TokenList.length ;
         for ( uint i = 0 ; i < list_length ; i ++ ){
             if ( strCompare(TokenList[i].token, _token )){
-                if( TokenList[i].creation_time  + 2 hours >= now ){
-                    return true;
-                }
-                break;
+                // if( TokenList[i].creation_time  + 2 hours >= now ){
+                return true;
+                // }
+                //break;
             }
         }
         return false;
