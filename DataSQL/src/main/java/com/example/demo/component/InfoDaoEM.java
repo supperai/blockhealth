@@ -34,7 +34,7 @@ public class InfoDaoEM {
         }
         SQL=SQL.substring(0,SQL.length()-1);
         //换表改表名
-        SQL=SQL+" from ehr";
+        SQL=SQL+" from ehr_data";
         System.out.println(SQL);
         List<List<Object>> result=entityManager.createNativeQuery(SQL).getResultList();
         System.out.println(result.size());
