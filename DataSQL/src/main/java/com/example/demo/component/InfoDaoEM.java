@@ -40,4 +40,12 @@ public class InfoDaoEM {
         System.out.println(result.size());
         return result;
     }
+
+    //自定义SQL语句查询
+    public List<List<Object>> getColumnBySQL(String SQL){
+        System.out.println(SQL);
+        List<List<Object>> result=entityManager.createNativeQuery(SQL).getResultList();
+        System.out.println(result.size());
+        return result;
+    }
 }

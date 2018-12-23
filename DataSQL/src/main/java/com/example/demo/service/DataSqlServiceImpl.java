@@ -21,4 +21,9 @@ public class DataSqlServiceImpl extends DataSqlService{
     public Object getInfoByVid(String name, List<String> list1) {
         return infoDaoEM.getInfoByVid(name,list1);
     }
+
+    @Override
+    public List<List<Object>> getColumnBySQL(String SQL) {
+        return infoDaoEM.getColumnBySQL(SQL);
+    }
 }

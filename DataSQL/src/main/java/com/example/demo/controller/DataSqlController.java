@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.ColumnRequestForm;
 import com.example.demo.entity.EhrRequestForm;
+import com.example.demo.entity.SQLRequestForm;
 import com.example.demo.service.EhrService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,5 +25,11 @@ public class DataSqlController {
     @RequestMapping(value = "/getColumn",method = RequestMethod.POST)
     public Object getColumn(@RequestBody ColumnRequestForm columnRequestForm){
         return ehrService.getColumn(columnRequestForm.getToken(),columnRequestForm.getColumn());
+    }
+
+    //自定义sql语句查询
+    @RequestMapping(value = "/getColumnBySQL",method = RequestMethod.POST)
+    public Object getColumnBySQL(@RequestBody SQLRequestForm sqlRequestForm){
+        return ehrService.getColumnBySQL(sqlRequestForm.getToken(),sqlRequestForm.getSql());
     }
 }

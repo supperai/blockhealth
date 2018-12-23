@@ -23,14 +23,26 @@ public class EhrService {
     @Autowired DataSqlService dataSqlService;
 
     public Object getByVid(String name,String token,List<String> list1) {
-        // TODO: 2018/12/14  补权限验证
-        return dataSqlService.getInfoByVid(name,list1);
+        if(authVert(token)) {
+            return dataSqlService.getInfoByVid(name,list1);
+        } else {
+            throw new RuntimeException("无权限！");
+        }
     }
 
     public List<List<Object>> getColumn(String token,List<String> list2){
         //权限验证
         if(authVert(token)) {
             return dataSqlService.getColumn(list2);
+        } else {
+            throw new RuntimeException("无权限！");
+        }
+    }
+
+    public List<List<Object>> getColumnBySQL(String token,String SQL){
+        //权限验证
+        if(authVert(token)) {
+            return dataSqlService.getColumnBySQL(SQL);
         } else {
             throw new RuntimeException("无权限！");
         }
@@ -44,7 +56,7 @@ public class EhrService {
         //加载账户信息
         Credentials credentials = null;
         try {
-            credentials = WalletUtils.loadCredentials("123","D:/Blockchain/node4/keystore/UTC--2018-12-14T04-06-02.245461600Z--df88e440b952ff9ab645e3bf357db380b030a83d");
+            credentials = WalletUtils.loadCredentials("123","H:/app/Ethereum/Blockchain Env/node5/keystore/UTC--2018-12-22T07-27-09.853000000Z--ce64c933e5570ba77b7825f97804b7dcecb184ae");
             System.out.println("credentials=" + credentials.getAddress());
         } catch (IOException e1) {
             // TODO Auto-generated catch block
@@ -53,7 +65,7 @@ public class EhrService {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
-        String address1="0x90566abecc2d94f2934f30bd388354500d3dd6dc";
+        String address1="0x906c2c7f637e34f0194806731d347b8875f93174";
         KCwithoutTime_sol_KernalContract kCwithoutTime_sol_kernalContract=KCwithoutTime_sol_KernalContract.load(address1,web3j,credentials,BigInteger.valueOf(200000),BigInteger.valueOf(20000000));
 
         Bool result = null;
