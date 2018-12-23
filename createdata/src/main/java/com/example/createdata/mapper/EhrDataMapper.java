@@ -186,4 +186,6 @@ public interface EhrDataMapper {
         "where `cid` = #{cid,jdbcType=VARCHAR}"
     })
     int updateByPrimaryKey(EhrData record);
+
+    int batchInsert(List<EhrData> list);
 }

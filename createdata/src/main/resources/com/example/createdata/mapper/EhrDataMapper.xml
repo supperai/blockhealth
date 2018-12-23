@@ -721,4 +721,29 @@
     </set>
     where `cid` = #{cid,jdbcType=VARCHAR}
   </update>
+
+  <insert id="batchInsert" parameterType="java.util.List">
+    insert into `ehr_data` (`cid`, `vid`, `name`, `gender`, `birthday`, `examdate`, `bz8`,
+        `bz10`, `bz11`, `bz12`, `bz16`, `bz17`, `bz18`,`bz171`, `bz172`, `bz173`, `bz174`,
+        `bz175`, `bz268`, `bz271`, `bz272`, `bz84`, `bz85`, `bz107`, `bz108`, `bz109`,
+        `bz110`, `bz104`, `bz105`, `bz106`, `bz113`, `bz111`, `bz112`, `bz103`, `bz120`,
+        `bz119`, `bz121`, `bz81`, `bz82`, `bz83`)
+    values
+    <foreach collection="list" item="record" separator=",">
+        (#{cid,jdbcType=VARCHAR}, #{vid,jdbcType=VARCHAR},
+        #{name,jdbcType=VARCHAR}, #{gender,jdbcType=VARCHAR}, #{birthday,jdbcType=TIMESTAMP},
+        #{examdate,jdbcType=TIMESTAMP}, #{bz8,jdbcType=VARCHAR},
+        #{bz10,jdbcType=VARCHAR}, #{bz11,jdbcType=VARCHAR}, #{bz12,jdbcType=VARCHAR},
+        #{bz16,jdbcType=VARCHAR}, #{bz17,jdbcType=VARCHAR}, #{bz18,jdbcType=VARCHAR},
+        #{bz171,jdbcType=VARCHAR}, #{bz172,jdbcType=VARCHAR}, #{bz173,jdbcType=VARCHAR},
+        #{bz174,jdbcType=VARCHAR}, #{bz175,jdbcType=VARCHAR}, #{bz268,jdbcType=VARCHAR},
+        #{bz271,jdbcType=VARCHAR}, #{bz272,jdbcType=VARCHAR}, #{bz84,jdbcType=VARCHAR},
+        #{bz85,jdbcType=VARCHAR}, #{bz107,jdbcType=VARCHAR}, #{bz108,jdbcType=VARCHAR},
+        #{bz109,jdbcType=VARCHAR}, #{bz110,jdbcType=VARCHAR}, #{bz104,jdbcType=VARCHAR},
+        #{bz105,jdbcType=VARCHAR}, #{bz106,jdbcType=VARCHAR}, #{bz113,jdbcType=VARCHAR},
+        #{bz111,jdbcType=VARCHAR}, #{bz112,jdbcType=VARCHAR}, #{bz103,jdbcType=VARCHAR},
+        #{bz120,jdbcType=VARCHAR}, #{bz119,jdbcType=VARCHAR}, #{bz121,jdbcType=VARCHAR},
+        #{bz81,jdbcType=VARCHAR}, #{bz82,jdbcType=VARCHAR}, #{bz83,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
 </mapper>
