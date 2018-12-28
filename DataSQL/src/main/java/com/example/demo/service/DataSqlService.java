@@ -9,4 +9,5 @@ import org.springframework.stereotype.Service;
 public abstract class DataSqlService {
     public abstract List<List<Object>> getColumn(List<String> list1);
     public abstract Object getInfoByVid(String name , List<String> list1);
+    public abstract List<List<Object>> getColumnBySQL(String SQL);
 }

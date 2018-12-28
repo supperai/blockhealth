@@ -34,7 +34,15 @@ public class InfoDaoEM {
         }
         SQL=SQL.substring(0,SQL.length()-1);
         //换表改表名
-        SQL=SQL+" from ehr_data";
+        SQL=SQL+" from ehr";
+        System.out.println(SQL);
+        List<List<Object>> result=entityManager.createNativeQuery(SQL).getResultList();
+        System.out.println(result.size());
+        return result;
+    }
+
+    //自定义SQL语句查询
+    public List<List<Object>> getColumnBySQL(String SQL){
         System.out.println(SQL);
         List<List<Object>> result=entityManager.createNativeQuery(SQL).getResultList();
         System.out.println(result.size());

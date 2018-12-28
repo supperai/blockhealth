@@ -23,14 +23,26 @@ public class EhrService {
     @Autowired DataSqlService dataSqlService;
 
     public Object getByVid(String name,String token,List<String> list1) {
-        // TODO: 2018/12/14  补权限验证
-        return dataSqlService.getInfoByVid(name,list1);
+        if(authVert(token)) {
+            return dataSqlService.getInfoByVid(name,list1);
+        } else {
+            throw new RuntimeException("无权限！");
+        }
     }
 
     public List<List<Object>> getColumn(String token,List<String> list2){
         //权限验证
         if(authVert(token)) {
             return dataSqlService.getColumn(list2);
+        } else {
+            throw new RuntimeException("无权限！");
+        }
+    }
+
+    public List<List<Object>> getColumnBySQL(String token,String SQL){
+        //权限验证
+        if(authVert(token)) {
+            return dataSqlService.getColumnBySQL(SQL);
         } else {
             throw new RuntimeException("无权限！");
         }
@@ -44,7 +56,7 @@ public class EhrService {
         //加载账户信息
         Credentials credentials = null;
         try {
-            credentials = WalletUtils.loadCredentials("123","/home/jhb/privateBlockchain/node2/keystore/UTC--2018-12-20T13-01-53.934478721Z--68ea2e08d9c085020388d72c1d5b72b3f85dc82a");
+            credentials = WalletUtils.loadCredentials("123","H:/app/Ethereum/Blockchain Env/node5/keystore/UTC--2018-12-22T07-27-09.853000000Z--ce64c933e5570ba77b7825f97804b7dcecb184ae");
             System.out.println("credentials=" + credentials.getAddress());
         } catch (IOException e1) {
             // TODO Auto-generated catch block
