@@ -14,7 +14,7 @@ export default class LoginButton extends Component {
     }
 
     login() {
-        this.action.getToken();
+        this.action.login();
         this.action.getDiseaseList();
     }
 

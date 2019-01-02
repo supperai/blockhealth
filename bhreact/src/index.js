@@ -10,6 +10,7 @@ import App from './App'
 import QueryEhrContainer from './ehr/queryehr/QueryEhrContainer'
 import {AddHospitalContainer} from "./ehr/addhospital/AddHospitalContainer";
 import {SignUpContainer} from "./ehr/signup/SignUpContainer";
+import {AuthorizeContainer} from "./ehr/authorize/AuthorizeContainer";
 
 // Redux Store
 import store from './store'
@@ -33,6 +34,7 @@ ReactDOM.render((
             <IndexRoute component={QueryEhrContainer} />
             <Route path="signUp" component={SignUpContainer} />
             <Route path="loadInfo" component={AddHospitalContainer} />
+            <Route path="auth" component={AuthorizeContainer} />
         </Route>
       </Router>
     </Provider>

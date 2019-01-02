@@ -15,9 +15,13 @@ export default class QueryEhrTable extends Component {
             dataIndex: 'no',
             key: 'no',
         }, {
-            title: '病情',
-            dataIndex: 'summary',
-            key: 'summary',
+            title: '来源',
+            dataIndex: 'hospital',
+            key: 'hospital',
+        }, {
+            title: '类型',
+            dataIndex: 'type',
+            key: 'type',
         }, {
             title: '详细信息',
             dataIndex: 'detail',

@@ -20,24 +20,23 @@ class QueryEhrQuery extends Component {
         const query = this.props.form.getFieldsValue();
         const {token} = this.props.queryEhr;
 
-        if ((query.idNo === undefined || query.idNo === '') && (query.diseaseName === undefined || query.diseaseName === '')) {
+        if (query.idNo === undefined || query.idNo === '') {
             message.warning("请输入参数！");
         } else {
             const {ehrs} = this.props.queryEhr;
             while (ehrs.length > 0) {
                 this.action.clearEhrs();
             }
-            if ((query.idNo !== undefined || query.idNo !== '')) {
-                this.action.queryEhrById({
-                    idNo: query.idNo,
-                    token: token
-                })
-            } else {
-                this.action.queryEhrByDisease({
-                    diseaseName: query.diseaseName,
-                    token: token
-                });
+
+            while (token === "") {
+                this.action.getToken();
             }
+
+            this.action.queryEhrById({
+                idNo: query.idNo,
+                deseaseName: query.deseaseName,
+                token: token
+            })
         }
     }
 

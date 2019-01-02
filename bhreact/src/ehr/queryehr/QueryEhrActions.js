@@ -1,5 +1,5 @@
 import store from "../../store";
-import KernelContract from '../../../build/contracts/KernelContract.json'
+import KernelContract from '../../../build/contracts/KernelContract.json';
 import {message} from "antd";
 var request = require('superagent');
 
@@ -76,7 +76,7 @@ export function queryEhrById(param) {
 
                 listRequest.deployed().then(function(instance) {
                     listRequestInstance = instance;
-                    listRequestInstance.getAllHpst(param.diseaseName)
+                    listRequestInstance.getAllHpst()
                         .then(function(result) {
                             let addressList = result.split(',');
 
@@ -150,7 +150,7 @@ export function getDiseaseList() {
     }
 }
 
-export function getToken() {
+export function login() {
 
     let web3 = store.getState().web3.web3Instance;
 
@@ -168,10 +168,37 @@ export function getToken() {
                 var account = accounts[0];
                 listRequest.deployed().then(function (instance) {
                     listRequestInstance = instance;
-                    // listRequestInstance.getToken({from: account})
-                    //     .then(function () {
-                    //         message.info("登录成功");
-                    //     });
+                    listRequestInstance.getToken({from: account})
+                        .then(function () {
+                            message.info("登录成功");
+                        });
+                })
+
+            })
+        }
+
+    } else {
+        console.error('Web3 is not initialized.');
+    }
+}
+
+export function getToken() {
+
+    let web3 = store.getState().web3.web3Instance;
+
+    if (typeof web3 !== 'undefined') {
+
+        return function(dispatch) {
+            const listRequest = contract(KernelContract);
+            listRequest.setProvider(web3.currentProvider);
+            let listRequestInstance;
+            web3.eth.getAccounts(function (error, accounts) {
+                if (error) {
+                    console.log(error);
+                }
+
+                listRequest.deployed().then(function (instance) {
+                    listRequestInstance = instance;
                     listRequestInstance.whatIsMyToken()
                         .then(function (result) {
                             return dispatch({
