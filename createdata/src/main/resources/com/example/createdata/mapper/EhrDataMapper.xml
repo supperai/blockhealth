@@ -745,20 +745,20 @@
         `bz119`, `bz121`, `bz81`, `bz82`, `bz83`)
     values
     <foreach collection="list" item="record" separator=",">
-        (#{cid,jdbcType=VARCHAR}, #{vid,jdbcType=VARCHAR},
-        #{name,jdbcType=VARCHAR}, #{gender,jdbcType=VARCHAR}, #{birthday,jdbcType=TIMESTAMP},
-        #{examdate,jdbcType=TIMESTAMP}, #{bz8,jdbcType=VARCHAR},
-        #{bz10,jdbcType=VARCHAR}, #{bz11,jdbcType=VARCHAR}, #{bz12,jdbcType=VARCHAR},
-        #{bz16,jdbcType=VARCHAR}, #{bz17,jdbcType=VARCHAR}, #{bz18,jdbcType=VARCHAR},
-        #{bz171,jdbcType=VARCHAR}, #{bz172,jdbcType=VARCHAR}, #{bz173,jdbcType=VARCHAR},
-        #{bz174,jdbcType=VARCHAR}, #{bz175,jdbcType=VARCHAR}, #{bz268,jdbcType=VARCHAR},
-        #{bz271,jdbcType=VARCHAR}, #{bz272,jdbcType=VARCHAR}, #{bz84,jdbcType=VARCHAR},
-        #{bz85,jdbcType=VARCHAR}, #{bz107,jdbcType=VARCHAR}, #{bz108,jdbcType=VARCHAR},
-        #{bz109,jdbcType=VARCHAR}, #{bz110,jdbcType=VARCHAR}, #{bz104,jdbcType=VARCHAR},
-        #{bz105,jdbcType=VARCHAR}, #{bz106,jdbcType=VARCHAR}, #{bz113,jdbcType=VARCHAR},
-        #{bz111,jdbcType=VARCHAR}, #{bz112,jdbcType=VARCHAR}, #{bz103,jdbcType=VARCHAR},
-        #{bz120,jdbcType=VARCHAR}, #{bz119,jdbcType=VARCHAR}, #{bz121,jdbcType=VARCHAR},
-        #{bz81,jdbcType=VARCHAR}, #{bz82,jdbcType=VARCHAR}, #{bz83,jdbcType=VARCHAR})
+        (#{record.cid,jdbcType=VARCHAR}, #{record.vid,jdbcType=VARCHAR},
+        #{record.name,jdbcType=VARCHAR}, #{record.gender,jdbcType=VARCHAR}, #{record.birthday,jdbcType=TIMESTAMP},
+        #{record.examdate,jdbcType=TIMESTAMP}, #{record.bz8,jdbcType=VARCHAR},
+        #{record.bz10,jdbcType=VARCHAR}, #{record.bz11,jdbcType=VARCHAR}, #{record.bz12,jdbcType=VARCHAR},
+        #{record.bz16,jdbcType=VARCHAR}, #{record.bz17,jdbcType=VARCHAR}, #{record.bz18,jdbcType=VARCHAR},
+        #{record.bz171,jdbcType=VARCHAR}, #{record.bz172,jdbcType=VARCHAR}, #{record.bz173,jdbcType=VARCHAR},
+        #{record.bz174,jdbcType=VARCHAR}, #{record.bz175,jdbcType=VARCHAR}, #{record.bz268,jdbcType=VARCHAR},
+        #{record.bz271,jdbcType=VARCHAR}, #{record.bz272,jdbcType=VARCHAR}, #{record.bz84,jdbcType=VARCHAR},
+        #{record.bz85,jdbcType=VARCHAR}, #{record.bz107,jdbcType=VARCHAR}, #{record.bz108,jdbcType=VARCHAR},
+        #{record.bz109,jdbcType=VARCHAR}, #{record.bz110,jdbcType=VARCHAR}, #{record.bz104,jdbcType=VARCHAR},
+        #{record.bz105,jdbcType=VARCHAR}, #{record.bz106,jdbcType=VARCHAR}, #{record.bz113,jdbcType=VARCHAR},
+        #{record.bz111,jdbcType=VARCHAR}, #{record.bz112,jdbcType=VARCHAR}, #{record.bz103,jdbcType=VARCHAR},
+        #{record.bz120,jdbcType=VARCHAR}, #{record.bz119,jdbcType=VARCHAR}, #{record.bz121,jdbcType=VARCHAR},
+        #{record.bz81,jdbcType=VARCHAR}, #{record.bz82,jdbcType=VARCHAR}, #{record.bz83,jdbcType=VARCHAR})
     </foreach>
   </insert>
 </mapper>
