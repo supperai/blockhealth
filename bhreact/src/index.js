@@ -7,10 +7,10 @@ import getWeb3 from './util/web3/getWeb3'
 
 // Layouts
 import App from './App'
-import QueryEhrContainer from './ehr/queryehr/QueryEhrContainer'
-import {AddHospitalContainer} from "./ehr/addhospital/AddHospitalContainer";
+import QueryEhrContainer from './ehr/queryehr/QueryEhrContainer';
 import {SignUpContainer} from "./ehr/signup/SignUpContainer";
 import {AuthorizeContainer} from "./ehr/authorize/AuthorizeContainer";
+import {HomePage} from "./ehr/homepage/HomePage";
 
 // Redux Store
 import store from './store'
@@ -31,9 +31,9 @@ ReactDOM.render((
     <Provider store={store}>
       <Router history={history}>
         <Route path="/" component={App}>
-            <IndexRoute component={QueryEhrContainer} />
+            <IndexRoute component={HomePage} />
+            <Route path="query" component={QueryEhrContainer} />
             <Route path="signUp" component={SignUpContainer} />
-            <Route path="loadInfo" component={AddHospitalContainer} />
             <Route path="auth" component={AuthorizeContainer} />
         </Route>
       </Router>

@@ -14,7 +14,8 @@ class SignUpForm extends Component {
     onSubmit() {
         const infoForm = this.props.form.getFieldsValue();
 
-        if (infoForm.name === undefined || infoForm.name === '') {
+        if (infoForm.name === undefined || infoForm.name === ''
+            || infoForm.ip === undefined || infoForm.ip === '' ) {
             message.warning("请输入信息！");
         } else {
             this.action.signUp(infoForm);
@@ -35,6 +36,15 @@ class SignUpForm extends Component {
                                     wrapperCol={{span: 15}}
                                 >
                                     <Input placeholder="请输入医疗机构" {...getFieldProps('name')} size="default"/>
+                                </FormItem>
+                            </Col>
+                            <Col sm={12} offset={6}>
+                                <FormItem
+                                    label="IP地址:"
+                                    labelCol={{span: 8}}
+                                    wrapperCol={{span: 15}}
+                                >
+                                    <Input placeholder="请输入IP地址" {...getFieldProps('ip')} size="default"/>
                                 </FormItem>
                             </Col>
                         </Row>

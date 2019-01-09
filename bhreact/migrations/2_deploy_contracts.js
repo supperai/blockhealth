@@ -1,6 +1,6 @@
 var Ownable = artifacts.require("./zeppelin/ownership/Ownable.sol");
 var Killable = artifacts.require("./zeppelin/lifecycle/Killable.sol");
-var Kernel = artifacts.require("./KernelContract.sol");
+var Kernel = artifacts.require("./KClite.sol");
 
 module.exports = function(deployer) {
   deployer.deploy(Ownable);

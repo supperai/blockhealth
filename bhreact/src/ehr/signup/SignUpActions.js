@@ -1,5 +1,5 @@
 import store from "../../store";
-import KernelContract from '../../../build/contracts/KernelContract.json'
+import KernelContract from '../../../build/contracts/KClite.json'
 import {message} from 'antd';
 
 const contract = require('truffle-contract');
@@ -21,7 +21,7 @@ export function signUp(param) {
             var account = accounts[0];
             listRequest.deployed().then(function(instance) {
                 listRequestInstance = instance;
-                listRequestInstance.sendRequest(param.name, {from: account})
+                listRequestInstance.sendRqst(param.name, param.ip, {from: account})
                     .then(function() {
                         message.info("申请成功，请等待审核");
                     })

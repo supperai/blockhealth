@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
-import {Col, Row, Form, Button, message, Select, Input} from 'antd';
-import * as AuthorizeActions from './AuthorizeActions';
+import {Col, Row, Form, Button, message, Input} from 'antd';
+import * as DataMiningActions from './DataMiningActions';
 import {connect} from 'react-redux';
 
 const FormItem = Form.Item;
@@ -9,10 +9,10 @@ const FormItem = Form.Item;
 @connect(state => ({
     authorize: state.authorize
 }))
-class AuthorizeForm extends Component {
+class DataMiningForm extends Component {
     constructor(props) {
         super(props);
-        this.action = bindActionCreators(AuthorizeActions, props.dispatch);
+        this.action = bindActionCreators(DataMiningActions, props.dispatch);
     }
 
     onSubmit() {
@@ -34,7 +34,7 @@ class AuthorizeForm extends Component {
 
     render() {
         const {getFieldProps} = this.props.form;
-        const {requestList} = this.props.authorize;
+        // const {requestList} = this.props.authorize;
         return (
             <main className="container">
                 <div className="search">
@@ -46,12 +46,12 @@ class AuthorizeForm extends Component {
                                     labelCol={{span: 8}}
                                     wrapperCol={{span: 15}}
                                 >
-                                    <Select placeholder="请选择医院名" {...getFieldProps('name')}>
-                                        {Object.keys(requestList).map((key, index) => {
-                                            return (<Option value={requestList[key]} key={index}>{requestList[key]}</Option>)
-                                        })}
-                                    </Select>
-                                    {/*<Input placeholder="请输入医疗机构" {...getFieldProps('name')} size="default"/>*/}
+                                    {/*<Select placeholder="请选择医院名" {...getFieldProps('name')}>*/}
+                                    {/*{Object.keys(requestList).map((key, index) => {*/}
+                                    {/*return (<Option value={requestList[key]} key={index}>{requestList[key]}</Option>)*/}
+                                    {/*})}*/}
+                                    {/*</Select>*/}
+                                    <Input placeholder="请输入医疗机构" {...getFieldProps('name')} size="default"/>
                                 </FormItem>
                             </Col>
                             <Col sm={4}>
@@ -73,4 +73,4 @@ class AuthorizeForm extends Component {
 
 }
 
-export default Form.create()(AuthorizeForm);
+export default Form.create()(DataMiningForm);
