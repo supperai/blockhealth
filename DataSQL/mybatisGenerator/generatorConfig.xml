@@ -9,7 +9,7 @@
     <!--<properties url="file:////Users/zlh/cjj/arenamgr/mybatisGenerator/generator.properties"></properties>-->
 
     <!--指定特定数据库的jdbc驱动jar包的位置 -->
-    <classPathEntry location="C:\Users\HUASINE\.m2\repository\mysql\mysql-connector-java\8.0.13\mysql-connector-java-8.0.13.jar"/>
+    <classPathEntry location="D:\IdeaProjects\DataSQL\mybatisGenerator\mysql-connector-java-5.1.37-bin.jar"/>
 
 
     <context id="default" targetRuntime="MyBatis3">
@@ -43,7 +43,7 @@
             targetPackage     指定生成的model生成所在的包名
             targetProject     指定在该项目下所在的路径
         -->
-        <javaModelGenerator targetPackage="com.example.demo.entity" targetProject="../src/main/java">
+        <javaModelGenerator targetPackage="com.example.demo.entity" targetProject="D:/IdeaProjects/DataSQL/src/main/java">
             <!-- 是否对model添加 构造函数 -->
             <property name="constructorBased" value="false"/>
 
@@ -60,9 +60,9 @@
         </javaModelGenerator>
 
         <!--Mapper映射文件生成所在的目录 为每一个数据库的表生成对应的SqlMap文件 -->
-        <!--<sqlMapGenerator targetPackage="com.example.demo.mapper" targetProject="../src/main/resources">-->
-            <!--<property name="enableSubPackages" value="false"/>-->
-        <!--</sqlMapGenerator>-->
+        <sqlMapGenerator targetPackage="com.example.demo.mapper" targetProject="D:/IdeaProjects/DataSQL/src/main/resources">
+            <property name="enableSubPackages" value="false"/>
+        </sqlMapGenerator>
 
 
         <!-- 客户端代码，生成易于使用的针对Model对象和XML配置文件 的代码
@@ -70,30 +70,30 @@
                 type="MIXEDMAPPER",生成基于注解的Java Model 和相应的Mapper对象
                 type="XMLMAPPER",生成SQLMap XML文件和独立的Mapper接口
         -->
-        <!--<javaClientGenerator targetPackage="com.example.demo.mapper" targetProject="../src/main/java"-->
-                             <!--type="MIXEDMAPPER">-->
-            <!--<property name="enableSubPackages" value=""/>-->
-            <!--&lt;!&ndash;-->
-                    <!--定义Maper.java 源代码中的ByExample() 方法的可视性，可选的值有：-->
-                    <!--public;-->
-                    <!--private;-->
-                    <!--protected;-->
-                    <!--default-->
-                    <!--注意：如果 targetRuntime="MyBatis3",此参数被忽略-->
-             <!--&ndash;&gt;-->
-            <!--<property name="exampleMethodVisibility" value=""/>-->
-            <!--&lt;!&ndash;-->
-                                           <!--方法名计数器-->
-              <!--Important note: this property is ignored if the target runtime is MyBatis3.-->
-             <!--&ndash;&gt;-->
-            <!--<property name="methodNameCalculator" value=""/>-->
+        <javaClientGenerator targetPackage="com.example.demo.mapper" targetProject="D:/IdeaProjects/DataSQL/src/main/java"
+                             type="MIXEDMAPPER">
+            <property name="enableSubPackages" value=""/>
+            <!--
+                    定义Maper.java 源代码中的ByExample() 方法的可视性，可选的值有：
+                    public;
+                    private;
+                    protected;
+                    default
+                    注意：如果 targetRuntime="MyBatis3",此参数被忽略
+             -->
+            <property name="exampleMethodVisibility" value=""/>
+            <!--
+                                           方法名计数器
+              Important note: this property is ignored if the target runtime is MyBatis3.
+             -->
+            <property name="methodNameCalculator" value=""/>
 
-            <!--&lt;!&ndash;-->
-                                                <!--为生成的接口添加父接口-->
-             <!--&ndash;&gt;-->
-            <!--<property name="rootInterface" value=""/>-->
+            <!--
+                                                为生成的接口添加父接口
+             -->
+            <property name="rootInterface" value=""/>
 
-        <!--</javaClientGenerator>-->
+        </javaClientGenerator>
 
         <!--_column防止字段名和数据库关键字一样-->
         <!--<table tableName="margin_balance"  domainObjectName="MarginBalance"></table>-->

@@ -13,17 +13,17 @@ public class DataSqlServiceImpl extends DataSqlService{
     private InfoDaoEM infoDaoEM;
 
     @Override
-    public List<List<Object>> getColumn(List<String> list1) {
+    public List<String> getColumn(List<String> list1) {
         return infoDaoEM.getColumn(list1);
     }
 
     @Override
-    public Object getInfoByVid(String name, List<String> list1) {
+    public List<Object[]> getInfoByVid(String name, List<String> list1) {
         return infoDaoEM.getInfoByVid(name,list1);
     }
 
     @Override
-    public List<List<Object>> getColumnBySQL(String SQL) {
-        return infoDaoEM.getColumnBySQL(SQL);
+    public List<Object[]> getColumnBySQL(List<String> SQLColumn) {
+        return infoDaoEM.getColumnBySQL(SQLColumn);
     }
 }
