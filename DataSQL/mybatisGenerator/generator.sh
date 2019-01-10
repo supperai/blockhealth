@@ -1,1 +1,1 @@
-java -jar mybatis-generator-core-1.3.2.jar -configfile ./generatorConfig.xml
+java -jar D:\IdeaProjects\DataSQL\mybatisGenerator\mybatis-generator-core-1.3.2.jar -configfile D:\IdeaProjects\DataSQL\mybatisGenerator\generatorConfig.xml

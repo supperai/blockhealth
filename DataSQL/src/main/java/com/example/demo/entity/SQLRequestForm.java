@@ -1,8 +1,10 @@
 package com.example.demo.entity;
 
+import java.util.List;
+
 public class SQLRequestForm {
     private String token;
-    private String sql;
+    private List<String> sqlcolumn;
 
     public String getToken() {
         return token;
@@ -12,11 +14,11 @@ public class SQLRequestForm {
         this.token = token;
     }
 
-    public String getSql() {
-        return sql;
+    public List<String> getSqlcolumn() {
+        return sqlcolumn;
     }
 
-    public void setSql(String sql) {
-        this.sql = sql;
+    public void setSqlcolumn(List<String> sqlcolumn) {
+        this.sqlcolumn = sqlcolumn;
     }
 }
