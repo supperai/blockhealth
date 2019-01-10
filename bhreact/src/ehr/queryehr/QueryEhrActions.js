@@ -37,6 +37,7 @@ export function queryEhrById(param) {
                                                 if(err){
                                                     message.error("节点"+i+"查询失败！");
                                                 } else {
+                                                    message.info("节点"+i+"查询成功！");
                                                     dispatch({
                                                         type: 'QUERY_EHR',
                                                         data: res.body,
