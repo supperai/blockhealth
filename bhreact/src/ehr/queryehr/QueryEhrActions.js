@@ -24,18 +24,18 @@ export function queryEhrById(param) {
 
                 listRequest.deployed().then(function(instance) {
                     listRequestInstance = instance;
-                    listRequestInstance.getHsptList()
+                    listRequestInstance.getHpstIp()
                         .then(function(result) {
                             let addressList = result.split(',');
 
                             return dispatch(() => {
                                 for (let i=0; i<addressList.length; i++) {
                                     if (addressList[i] !== '') {
-                                        request.get(addressList[i] + '/getEhrById')
-                                            .query(param)
+                                        request.post(addressList[i] + '/getByVid')
+                                            .send(param)
                                             .end(function (err, res) {
                                                 if(err){
-                                                    alert(err);
+                                                    message.error("节点"+i+"查询失败！");
                                                 } else {
                                                     dispatch({
                                                         type: 'QUERY_EHR',
@@ -85,6 +85,13 @@ export function login() {
                     listRequestInstance.getToken({from: account})
                         .then(function () {
                             message.info("登录成功");
+                            listRequestInstance.whatIsMyToken()
+                                .then(function (result) {
+                                    return dispatch({
+                                        type: 'LOGIN',
+                                        data: result,
+                                    })
+                                });
                         });
                 })
 

@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-contract KCliteWithToken {
+contract KCliteWithToken2 {
     
     struct Hspt {
         string name;
@@ -13,14 +13,17 @@ contract KCliteWithToken {
         address addr;
     }
     
-    Hspt [] public HsptList;
-    Hspt [] public RqstList;
-    Token [] public TokenList;
+    Hspt[] public HsptList;
+    Hspt[] public RqstList;
+    Token[] public TokenList;
     
+    function test() public constant returns (uint){
+        return HsptList.length;
+    }
     
     address  minter;
     
-    function KCliteWithToken()  {
+    function KCliteWithToken2()  {
         minter = msg.sender ;
     }
     
@@ -113,21 +116,8 @@ contract KCliteWithToken {
         }
     }
     
-    byte [5] rettmp ;
     function tokenGeneration () constant internal returns ( string ){
-        
-        bytes memory alfbt = "abcdefghijklmnopqrstuvwxyz0123456789";
-        bytes memory ret = "qwert";
-        // byte [5] rettmp ;
-        uint randNonce = 0 ;
-        for( uint i = 0 ; i < 5 ; i ++ ){
-            rettmp[i] = alfbt[uint(sha256( now, msg.sender , randNonce++)) % 36];
-        }
-        for( uint j = 0 ; j < 5 ; j ++ ){
-            ret[j] = rettmp[j];
-        }
-        return string(ret);
-        
+        return "af8ix";
     }
     
     function getToken () public {

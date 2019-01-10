@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import QueryEhrTable from './QueryEhrTable';
 import QueryEhrQuery from './QueryEhrQuery';
+import LoginButton from './LoginButton';
 import './tableform.less';
 import {Link} from "react-router";
 
@@ -10,32 +11,38 @@ import {Link} from "react-router";
 }))
 export default class QueryEhrContainer extends Component {
 
-    // OnlyGuestLinks() {
-    //     const {token} = this.props.queryEhr;
-    //     if (token === '' || token === undefined) {
-    //         return (
-    //             <span>
-    //                 <li className="pure-menu-item">
-    //                     <Link to="/signUp" className="pure-menu-link">注册</Link>
-    //                 </li>
-    //                 <LoginButton/>
-    //             </span>
-    //         )
-    //     }
-    // }
+    OnlyGuestLinks() {
+        const {token} = this.props.queryEhr;
+        if (token === '' || token === undefined) {
+            return (
+                <LoginButton/>
+            )
+        }
+    }
+
+    OnlyUserShow() {
+        const {token} = this.props.queryEhr;
+        if (token !== '' && token !== undefined) {
+            return (
+                <div>
+                    <QueryEhrQuery/>
+                    <QueryEhrTable/>
+                </div>
+            )
+        }
+    }
 
     render() {
 
         return (
             <div className="query">
                 <nav className="navbar pure-menu pure-menu-horizontal">
-                    <ul className="pure-menu-list navbar-right">
+                    <li className="pure-menu-item">
                         <Link to="/" className="pure-menu-link">返回</Link>
-                    </ul>
+                    </li>
+                    {this.OnlyGuestLinks()}
                 </nav>
-                <QueryEhrQuery/>
-
-                <QueryEhrTable/>
+                {this.OnlyUserShow()}
             </div>
         );
     }

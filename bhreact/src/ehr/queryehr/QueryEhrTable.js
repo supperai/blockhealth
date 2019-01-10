@@ -18,18 +18,18 @@ export default class QueryEhrTable extends Component {
             className: "infoForm",
         }, {
             title: '来源',
-            dataIndex: 'hospital',
-            key: 'hospital',
+            dataIndex: 'hspt',
+            key: 'hspt',
             className: "infoForm",
         }, {
             title: '类型',
-            dataIndex: 'type',
-            key: 'type',
+            dataIndex: 'columnname',
+            key: 'columnname',
             className: "infoForm",
         }, {
             title: '详细信息',
-            dataIndex: 'detail',
-            key: 'detail',
+            dataIndex: 'value',
+            key: 'value',
             className: "infoForm",
         }];
 

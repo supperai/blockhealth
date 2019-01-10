@@ -1,3 +1,5 @@
+import {ITEM} from '../constant/EhrConstants';
+
 const initialState = {
     ehrs:[],
     token: '',
@@ -11,8 +13,11 @@ export default function (state = initialState, action) {
             let newEhrs = state.ehrs;
             let index = state.ehrs.length;
             for (let i = 0; i < action.data.length; i++) {
-                newEhrs.push(action.data[i]);
-                newEhrs[index].no = ++index;
+                for (let j = 0; j < action.data[i].length; j++) {
+                    newEhrs.push(action.data[i][j]);
+                    newEhrs[index].columnname = ITEM[action.data[i][j].columnname];
+                    newEhrs[index].no = ++index;
+                }
             }
 
             return {
@@ -24,22 +29,6 @@ export default function (state = initialState, action) {
             return {
                 ...state,
                 ehrs: []
-            };
-
-        case 'GET_DISEASE_LIST':
-            let diseases = [];
-            if (action.data.length > 0) {
-                let tmpList = action.data.split(',');
-                for (let i = 0; i < tmpList.length; i++) {
-                    if (tmpList[i] !== '') {
-                        diseases.push(tmpList[i]);
-                    }
-                }
-            }
-
-            return {
-                ...state,
-                diseaseList:diseases
             };
 
         case 'LOGIN':
